@@ -62,6 +62,7 @@
           <button id="desktopSearchBtn" class="p-2 rounded-full text-xl hover:text-gray-700 hover:bg-gray-200 focus:outline-none search-trigger">
             <i class="fas fa-search"></i>
           </button>
+          <!-- Cart icon -->
           <a href="{{ route('cart.index') }}" class="p-2 rounded-full text-xl hover:text-gray-700 hover:bg-gray-200 focus:outline-none">
             <i class="fas fa-shopping-cart"></i>
           </a>
@@ -69,7 +70,8 @@
           <button onclick="showOopsDrawer()" class="p-2 rounded-full text-xl hover:text-gray-700 hover:bg-gray-200 focus:outline-none">
             <i class="fas fa-search"></i>
           </button>
-          <a href="{{ route('cart.index') }}" onclick="showOopsDrawer()" class="p-2 rounded-full text-xl hover:text-gray-700 hover:bg-gray-200 focus:outline-none">
+          <!-- Cart icon untuk guest -->
+          <a href="javascript:void(0)" onclick="showOopsDrawer()" class="p-2 rounded-full text-xl hover:text-gray-700 hover:bg-gray-200 focus:outline-none">
             <i class="fas fa-shopping-cart"></i>
           </a>
         @endauth
@@ -146,6 +148,7 @@
           <button class="w-full p-2 rounded-md bg-gray-200 text-left search-trigger">
             <i class="fas fa-search mr-2"></i> Cari Produk
           </button>
+          <!-- Cart icon Mobile -->
           <a href="{{ route('cart.index') }}" class="w-full p-2 rounded-md bg-gray-200 text-left">
             <i class="fas fa-shopping-cart mr-2"></i> Keranjang
           </a>
@@ -153,7 +156,8 @@
           <button onclick="showOopsDrawer()" class="w-full p-2 rounded-md bg-gray-200 text-left">
             <i class="fas fa-search mr-2"></i> Cari Produk
           </button>
-          <a href="{{ route('cart.index') }}" onclick="showOopsDrawer()" class="w-full p-2 rounded-md bg-gray-200 text-left">
+          <!-- Cart icon Mobile untuk guest -->
+          <a href="javascript:void(0)" onclick="showOopsDrawer()" class="w-full p-2 rounded-md bg-gray-200 text-left">
             <i class="fas fa-shopping-cart mr-2"></i> Keranjang
           </a>
         @endauth
