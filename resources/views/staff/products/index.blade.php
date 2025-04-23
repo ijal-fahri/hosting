@@ -23,7 +23,7 @@
     {{-- sidebar --}}
     <x-sidebar-pemasok></x-sidebar-pemasok>
     {{-- end --}}
-    
+
     <div id="layoutSidenav_content">
         <main>
             <div class="card mb-4">
@@ -174,13 +174,15 @@
 
                                                 <button class="btn btn-sm btn-info show-btn"
                                                     data-href="{{ route('staff.products.show', $product->id) }}">Show</button>
-
-                                                <form class="d-inline delete-form" data-id="{{ $product->id }}">
+                                                <form class="d-inline delete-form"
+                                                    action="{{ route('staff.products.destroy', $product->id) }}"
+                                                    method="POST">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="button"
                                                         class="btn btn-sm btn-danger delete-btn">Hapus</button>
                                                 </form>
+
                                             </div>
                                         </td>
                                     </tr>

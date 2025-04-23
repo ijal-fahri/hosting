@@ -20,8 +20,6 @@
                             <i class="far fa-heart"></i>
                         </div>
 
-                        <span class="badge">{{ $product->status == 'aktif' ? 'Best Seller' : 'Tidak Aktif' }}</span>
-
                         @if ($product->photo)
                             <img src="{{ asset('storage/' . $product->photo) }}" alt="{{ $product->name }}"
                                 class="product-image">

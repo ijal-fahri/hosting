@@ -54,7 +54,7 @@ Route::get('/settings', [SettingsController::class, 'index'])->name('settings.in
 
 //Route Riwayat Pesanan
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::get('/produkdetail', [ProdukdetailController::class, 'index'])->name('produkdetail.index');
+Route::get('/produkdetail/{id?}', [ProdukdetailController::class, 'index'])->name('produkdetail.index');
 Route::get('/cekot', [CekotController::class, 'index'])->name('cekot.index');
 
 //Route Riwayat Transaksi

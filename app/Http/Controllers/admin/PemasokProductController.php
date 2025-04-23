@@ -23,13 +23,13 @@ class PemasokProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'code' => 'required|unique:products|numeric',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
+            'code' => 'nullable|unique:products|numeric',
+            'price' => 'nullable|numeric|min:0',
+            'stock' => 'nullable|integer|min:0',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'status' => 'required|in:aktif,nonaktif',
+            'status' => 'nullable|in:aktif,nonaktif',
             'diskon' => 'nullable|numeric|min:0|max:100',
         ]);
 
@@ -105,13 +105,13 @@ class PemasokProductController extends Controller
     public function destroy(string $id)
     {
         $product = Product::findOrFail($id);
-        
-        if ($product->photo) {
+    
+        if ($product->photo && Storage::exists('public/' . $product->photo)) {
             Storage::delete('public/' . $product->photo);
         }
-
+    
         $product->delete();
-
-        return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus!');
-    }
+    
+        return redirect()->route('staff.products.index')->with('success', 'Produk berhasil dihapus!');
+    }    
 }

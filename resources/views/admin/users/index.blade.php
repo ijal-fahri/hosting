@@ -1,53 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Dashboard - Daftar User</title>
-    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-    <link href="{{ asset('asset-landing-admin/css/styles.css') }}" rel="stylesheet" />
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Tambahkan di <head> -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <style>
-        .filter-btn.btn-primary {
-            border: none;
-        }
-
-        .filter-btn:not(.btn-primary) {
-            background-color: #e0e0e0;
-            color: #333;
-        }
-    </style>
-    <script>
-        function filterRows(role) {
-            document.querySelectorAll('.user-row').forEach(function(row) {
-                if (role === 'all') {
-                    row.style.display = '';
-                } else {
-                    row.style.display = row.classList.contains(role) ? '' : 'none';
-                }
-            });
-        }
-
-        document.querySelectorAll('.filter-btn').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                const role = this.dataset.filter;
-                filterRows(role);
-            });
-        });
-
-        // Tampilkan data staff saat pertama kali halaman load
-        document.addEventListener('DOMContentLoaded', function() {
-            filterRows('staff');
-        });
-    </script>
-
-</head>
+{{-- head --}}
+<x-head-admin-user></x-head-admin-user>
+{{-- end --}}
 
 <body class="sb-nav-fixed">
     <x-navbar-admin></x-navbar-admin>
@@ -96,17 +49,20 @@
                                             <td>{{ ucfirst($user->usertype) }}</td>
                                             <td>
                                                 @if ($user->usertype === 'staff')
-                                                    <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                                    <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline delete-form">
+                                                    <a href="{{ route('users.edit', $user->id) }}"
+                                                        class="btn btn-warning btn-sm">Edit</a>
+                                                    <form action="{{ route('users.destroy', $user->id) }}"
+                                                        method="POST" class="d-inline delete-form">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="button" class="btn btn-danger btn-sm delete-btn">Hapus</button>
+                                                        <button type="button"
+                                                            class="btn btn-danger btn-sm delete-btn">Hapus</button>
                                                     </form>
                                                 @elseif($user->usertype === 'user')
                                                     <span class="text-muted">Tidak bisa dihapus</span>
                                                 @endif
                                             </td>
-                                            
+
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -118,69 +74,7 @@
             </div>
         </main>
     </div>
-
-    <!-- Script -->
-    <script src="{{ asset('asset-landing-admin/js/scripts.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-    <script src="{{ asset('asset-landing-admin/assets/demo/chart-area-demo.js') }}"></script>
-    <script src="{{ asset('asset-landing-admin/assets/demo/chart-bar-demo.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
-    </script>
-    <script src="{{ asset('js/scripts.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
-        crossorigin="anonymous"></script>
-    <script src="{{ asset('js/datatables-simple-demo.js') }}"></script>
-
-    <!-- Filter Script -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            function filterRows(role) {
-                document.querySelectorAll('.user-row').forEach(function(row) {
-                    row.style.display = row.classList.contains(role) ? '' : 'none';
-                });
-            }
-
-            // Show staff on page load
-            filterRows('staff');
-
-            document.querySelectorAll('.filter-btn').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    let filter = btn.getAttribute('data-filter');
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove(
-                        'btn-primary'));
-                    btn.classList.add('btn-primary');
-                    filterRows(filter);
-                });
-            });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const deleteButtons = document.querySelectorAll('.delete-btn');
-    
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const form = this.closest('form');
-    
-                    Swal.fire({
-                        title: 'Yakin ingin menghapus?',
-                        text: "Data user akan dihapus secara permanen!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#6c757d', // Abu-abu
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Ya, hapus!',
-                        cancelButtonText: 'Batal'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
-                });
-            });
-        });
-    </script>
-    
 </body>
-
-</html>
+{{-- tail-user --}}
+<x-tail-admin-user></x-tail-admin-user>
+{{-- end --}}
