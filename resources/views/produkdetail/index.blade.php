@@ -173,15 +173,7 @@
         </div>
       </div>
     </div>
-    
-    <!-- Profile Admin/Vendor -->
-    <div class="bg-white rounded-lg shadow-xl p-6 flex items-center">
-      <img src="https://via.placeholder.com/80" alt="Profil Vendor" class="w-20 h-20 rounded-full shadow-lg" />
-      <div class="ml-6">
-        <h4 class="text-2xl font-bold text-gray-800">Admin Tokoku</h4>
-        <p class="text-gray-600">Vendor terpercaya dengan pengalaman lebih dari 5 tahun di industri fashion anak.</p>
-      </div>
-    </div>
+
     
     <!-- Info Lain: Pengiriman, Garansi, Pelayanan -->
     <div class="bg-white rounded-lg shadow-xl p-6 grid md:grid-cols-3 gap-6">
