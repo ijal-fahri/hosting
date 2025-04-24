@@ -20,6 +20,8 @@
                             <i class="far fa-heart"></i>
                         </div>
 
+                        <span class="badge">{{ $product->status == 'aktif' ? 'Best Seller' : 'Tidak Aktif' }}</span>
+
                         @if ($product->photo)
                             <img src="{{ asset('storage/' . $product->photo) }}" alt="{{ $product->name }}"
                                 class="product-image">
@@ -47,7 +49,6 @@
             </div>
         </section>
 
-        {{-- Include CSS yang sama seperti sebelumnya --}}
         <style>
             /* Import SF Pro Font */
             @import url('https://fonts.googleapis.com/css2?family=SF+Pro:wght@400;600;700&display=swap');
