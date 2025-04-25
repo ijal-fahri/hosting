@@ -6,17 +6,11 @@ use App\Models\Product;
 
 class ProdukdetailController extends Controller
 {
-    public function index($id = null)
+    public function index($id)
     {
-        if ($id) {
-            // Jika ada ID, ambil hanya produk yang dipilih
-            $products = Product::where('id', $id)->get();
-        } else {
-            // Jika tidak ada ID, ambil semua produk
-            $products = Product::all();
-        }
+        // Ambil produk berdasarkan ID, jika tidak ketemu akan 404
+        $product = Product::where('id', $id)->firstOrFail();
 
-        return view('produkdetail.index', compact('products'));
+        return view('produkdetail.index', compact('product'));
     }
 }
-

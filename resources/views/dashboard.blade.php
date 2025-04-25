@@ -19,27 +19,6 @@
     </div>
   </section>
 
-  <!-- PAYMENT METHODS -->
-  <section class="payment-methods">
-    <div class="payment-inner">
-      <h2 class="payment-title">Pilihan Metode Pembayaran yang Tersedia</h2>
-      <div class="payment-icons">
-        <a href="https://www.dana.id/" target="_blank">
-          <img src="{{ asset('/assets/dana.jpeg') }}" alt="Dana">
-        </a>
-        <a href="https://www.ovo.id/" target="_blank">
-          <img src="{{ asset('/assets/ovo.jpeg') }}" alt="OVO">
-        </a>
-        <a href="https://www.gopay.co.id/" target="_blank">
-          <img src="{{ asset('/assets/gopay.jpeg') }}" alt="Gopay">
-        </a>
-        <a href="https://www.linkaja.id/" target="_blank">
-          <img src="{{ asset('/assets/linkaj.jpeg') }}" alt="LinkAja">
-        </a>
-      </div>
-    </div>
-  </section>
-
 
 <!-- EXPLORE SECTION (Are you ready) -->
 <section class="explore-section">

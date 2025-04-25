@@ -49,11 +49,9 @@
         <a href="/" class="hover:text-gray-700">Home</a>
         @auth
           <a href="/shop" class="hover:text-gray-700">Shop</a>
-          <a href="/collection" class="hover:text-gray-700">Collection</a>
           <a href="/faqs" class="hover:text-gray-700">Faqs</a>
         @else
           <a href="javascript:void(0)" onclick="showOopsDrawer()" class="hover:text-gray-700">Shop</a>
-          <a href="javascript:void(0)" onclick="showOopsDrawer()" class="hover:text-gray-700">Collection</a>
           <a href="javascript:void(0)" onclick="showOopsDrawer()" class="hover:text-gray-700">Faqs</a>
         @endauth
       </nav>
@@ -94,9 +92,6 @@
               <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
                 <i class="fas fa-user"></i> Profile
               </a>
-              <a href="{{ route('settings.index') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
-                <i class="fas fa-cog"></i> Settings
-              </a>
               <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-red-600 hover:text-red-800">
                 <i class="fas fa-sign-out-alt"></i> Logout
               </a>
@@ -120,11 +115,9 @@
         <a href="/" class="hover:text-gray-700">Home</a>
         @auth
           <a href="{{ route('shop.index') }}" class="hover:text-gray-700">Shop</a>
-          <a href="{{ route('collection.index') }}" class="hover:text-gray-700">Collection</a>
           <a href="{{ route('faqs.index') }}" class="hover:text-gray-700">Faqs</a>
         @else
           <a href="javascript:void(0)" onclick="showOopsDrawer()" class="hover:text-gray-700">Shop</a>
-          <a href="javascript:void(0)" onclick="showOopsDrawer()" class="hover:text-gray-700">Collection</a>
           <a href="javascript:void(0)" onclick="showOopsDrawer()" class="hover:text-gray-700">Faqs</a>
         @endauth
       </nav>
@@ -138,7 +131,6 @@
             <a href="{{ route('register') }}" class="px-2 py-1 hover:bg-gray-100">Register</a>
           @else
             <a href="/profile" class="px-2 py-1 hover:bg-gray-100">Profile</a>
-            <a href="/settings" class="px-2 py-1 hover:bg-gray-100">Settings</a>
             <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="px-2 py-1 hover:bg-gray-100 text-red-600 hover:text-red-800">Logout</a>
           @endguest
         </div>
@@ -223,7 +215,6 @@
         <ul class="space-y-2">
           <li><a href="/" class="hover:underline">Home</a></li>
           <li><a href="/shop" class="hover:underline">Shop</a></li>
-          <li><a href="/collection" class="hover:underline">Collection</a></li>
           <li><a href="/faqs" class="hover:underline">Faqs</a></li>
           <li><a href="/privacy" class="hover:underline">Privacy</a></li>
         </ul>
