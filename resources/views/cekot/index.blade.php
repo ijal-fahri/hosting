@@ -314,6 +314,16 @@
                         alert(error.message);
                     }
                 });
+
+                function toggleQRCode() {
+                    const paymentMethod = document.getElementById('paymentMethod').value;
+                    const qrCodeContainer = document.getElementById('qrCodeContainer');
+                    if (paymentMethod === 'cod') {
+                        qrCodeContainer.classList.remove('hidden');
+                    } else {
+                        qrCodeContainer.classList.add('hidden');
+                    }
+                }
             </script>
 
             <div id="total-akhir" class="mt-4 text-lg font-bold text-gray-800"></div>
@@ -367,11 +377,21 @@
                 <!-- Payment Method -->
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
-                    <select name="payment_method" class="mt-1 block w-full rounded-md border-gray-300" required>
+                    <select name="payment_method" id="paymentMethod"
+                        class="mt-1 block w-full rounded-md border-gray-300" required onchange="toggleQRCode()">
                         <option value="">Pilih Metode Pembayaran</option>
-                        <option value="cod">COD</option>
-                        <option value="midtrans">Midtrans</option>
+                        <option value="cod">Qris</option>
                     </select>
+
+                    <!-- QR Code Container -->
+                    <div id="qrCodeContainer" class="hidden mt-4">
+                        <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <p class="text-sm text-gray-600 mb-2">Scan QR Code untuk pembayaran:</p>
+                            <img src="{{ asset('storage/qr-code.png') }}" alt="QR Code" class="mx-auto w-48 h-48">
+                            <p class="text-xs text-gray-500 mt-2 text-center">Silakan scan QR Code ini untuk melakukan
+                                pembayaran COD</p>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="w-full bg-brand text-white py-3 rounded-2xl font-semibold">
