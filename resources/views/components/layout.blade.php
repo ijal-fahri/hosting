@@ -92,6 +92,9 @@
               <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
                 <i class="fas fa-user"></i> Profile
               </a>
+              <a href="{{ route('user.orders.index') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
+                <i class="fas fa-shopping-bag"></i> Pesanan Saya
+              </a>
               <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 text-red-600 hover:text-red-800">
                 <i class="fas fa-sign-out-alt"></i> Logout
               </a>
@@ -131,8 +134,12 @@
             <a href="{{ route('register') }}" class="px-2 py-1 hover:bg-gray-100">Register</a>
           @else
             <a href="/profile" class="px-2 py-1 hover:bg-gray-100">Profile</a>
-            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="px-2 py-1 hover:bg-gray-100 text-red-600 hover:text-red-800">Logout</a>
-          @endguest
+            <a href="{{ route('user.orders.index') }}" class="px-2 py-1 hover:bg-gray-100">
+                <i class="fas fa-shopping-bag mr-2"></i>Pesanan Saya
+            </a>
+            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
+                class="px-2 py-1 hover:bg-gray-100 text-red-600 hover:text-red-800">Logout</a>
+          @endauth
         </div>
       </div>
       <div class="mt-6 flex flex-col gap-2">

@@ -17,6 +17,7 @@ use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\CekotController;
 use App\Http\Controllers\ChekoutController;
 use App\Http\Controllers\DataProdukController;
+use App\Http\Controllers\UserOrderController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -84,4 +85,7 @@ Route::delete('/cart/deleteItem/{id}', [CartController::class, 'deleteItem'])->n
 Route::post('/cekot/checkout', [ChekoutController::class, 'checkout'])->name('checkout');
 Route::post('/cart/checkout', [ChekoutController::class, 'checkout'])->name('checkout.store');
 Route::post(uri: '/checkCost', action: [ChekoutController::class, 'checkShippingCost'])->name('checkCost');
+
+Route::get('/my-orders', [UserOrderController::class, 'index'])->name('user.orders.index');
+
 require __DIR__ . '/auth.php';
