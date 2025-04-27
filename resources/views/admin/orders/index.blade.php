@@ -37,12 +37,10 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nomor Pesanan</th>
                                     <th>Nama Pelanggan</th>
                                     <th>Tanggal Pesanan</th>
                                     <th>Total Harga</th>
                                     <th>Status Pembayaran</th>
-                                    <th>Status Pengiriman</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -50,20 +48,13 @@
                                 @forelse($orders as $order)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $order->order_number }}</td>
-                                        <td>{{ $order->customer_name }}</td>
-                                        <td>{{ $order->order_date }}</td>
+                                        <td>{{ $order->user_id }}</td>
+                                        <td>{{ $order->created_at }}</td>
                                         <td>Rp{{ number_format($order->total_price, 0, ',', '.') }}</td>
                                         <td>
                                             <span
-                                                class="badge {{ $order->payment_status == 'paid' ? 'bg-success' : 'bg-danger' }}">
-                                                {{ ucfirst($order->payment_status) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span
-                                                class="badge {{ $order->shipping_status == 'shipped' ? 'bg-primary' : 'bg-warning' }}">
-                                                {{ ucfirst($order->shipping_status) }}
+                                                class="badge {{ $order->status == 'paid' ? 'bg-success' : 'bg-danger' }}">
+                                                {{ ucfirst($order->status) }}
                                             </span>
                                         </td>
                                         <td>
@@ -95,10 +86,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <h6>Nama Pelanggan: {{ $order->customer_name }}</h6>
-                        <p><strong>Alamat Pengiriman:</strong> {{ $order->shipping_address }}</p>
+                        <h6>Nama Pelanggan: {{ $order->user_id }}</h6>
+                        <p><strong>Alamat Pengiriman:</strong> {{ $order->alamat }}</p>
                         <p><strong>Status Pembayaran:</strong> {{ ucfirst($order->payment_status) }}</p>
-                        <p><strong>Status Pengiriman:</strong> {{ ucfirst($order->shipping_status) }}</p>
                         <h6>Produk yang Dipesan:</h6>
                         <ul>
                             @foreach($order->orderItems as $item)
