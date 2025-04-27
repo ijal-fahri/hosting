@@ -15,10 +15,10 @@ class AdminOrderController extends Controller
     {
         // Ambil semua pesanan, termasuk relasi item dan produk
         $orders = Order::all();
-    
+
         return view('admin.orders.index', compact('orders'));
     }
-    
+
 
     /**
      * Show the form for creating a new resource.
@@ -39,11 +39,11 @@ class AdminOrderController extends Controller
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
         ]);
-    
+
         $order = Order::create([
             'customer_name' => $validated['customer_name'],
         ]);
-    
+
         foreach ($validated['products'] as $productData) {
             $product = Product::find($productData['product_id']);
             $order->items()->create([
@@ -52,21 +52,32 @@ class AdminOrderController extends Controller
                 'price' => $product->price,
             ]);
         }
-    
+
         return response()->json(['message' => 'Pesanan berhasil dibuat']);
     }
-    
-    public function updateStatus(Request $request, Order $order)
-{
-    $request->validate([
-        'status' => 'required|in:pending,diproses,dikirim,selesai'
-    ]);
 
-    $order->update(['status' => $request->status]);
+    public function updateStatus(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'status' => 'required|in:Pending,Processed,Delivery,Completed,Cancelled'
+            ]);
 
-    return response()->json(['message' => 'Status diperbarui']);
-}
+            $order = Order::findOrFail($id);
+            $order->update(['status' => $request->status]);
 
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Status pesanan berhasil diperbarui'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui status: ' . $e->getMessage()
+            ], 422);
+        }
+    }
 
     /**
      * Display the specified resource.

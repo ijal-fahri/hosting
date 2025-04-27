@@ -36,10 +36,11 @@ Route::middleware('auth')->group(function () {
 
 // **ADMIN ROUTE** dengan prefix `/admin` dan middleware `admin`
 
-Route::get('/admin/dashboard',[AdminController::class, 'index'])->middleware('auth','admin');
+Route::get('/admin/dashboard', [AdminController::class, 'index'])->middleware('auth', 'admin');
 Route::resource('/admin/products', AdminProductController::class);
 Route::resource('/admin/users', AdminUserController::class);
 Route::resource('/admin/orders', AdminOrderController::class);
+Route::post('/admin/orders/{id}/update-status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 
 // **PEMASOK ROUTE** dengan prefix `/pemasok` dan middleware `pemasok`
 Route::middleware(['auth', 'staff'])->prefix('staff')->group(function () {
@@ -62,10 +63,10 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 
 
 //Route Riwayat Transaksi
-Route::get('/riwayat/pemesanan/', [RiwayatController::class, 'index']) ->name('riwayat.pemesanan.pesanan');
-Route::get('/riwayat/pemesanan/detail', [RiwayatController::class, 'detail']) ->name('riwayat.pemesanan.detail'); 
-Route::get('/riwayat/transaksi/', [RiwayatController::class, 'trans']) ->name('riwayat.transaksi.trans');
-Route::get('/riwayat/transaksi/struk-preview', [RiwayatController::class, 'struk']) ->name('riwayat.transaksi.struk-preview');
+Route::get('/riwayat/pemesanan/', [RiwayatController::class, 'index'])->name('riwayat.pemesanan.pesanan');
+Route::get('/riwayat/pemesanan/detail', [RiwayatController::class, 'detail'])->name('riwayat.pemesanan.detail');
+Route::get('/riwayat/transaksi/', [RiwayatController::class, 'trans'])->name('riwayat.transaksi.trans');
+Route::get('/riwayat/transaksi/struk-preview', [RiwayatController::class, 'struk'])->name('riwayat.transaksi.struk-preview');
 
 // Route::get('/cek-ongkir', [CekotController::class, 'index']);
 Route::resource('/cekot', ChekoutController::class);
@@ -83,4 +84,4 @@ Route::delete('/cart/deleteItem/{id}', [CartController::class, 'deleteItem'])->n
 Route::post('/cekot/checkout', [ChekoutController::class, 'checkout'])->name('checkout');
 Route::post('/cart/checkout', [ChekoutController::class, 'checkout'])->name('checkout.store');
 Route::post(uri: '/checkCost', action: [ChekoutController::class, 'checkShippingCost'])->name('checkCost');
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

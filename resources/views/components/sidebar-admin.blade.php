@@ -47,10 +47,10 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-bars"></i></div>
                         Data Pesanan
                     </a>
-                    <a class="nav-link {{ request()->is('admin/reports') ? 'active' : '' }}" href="/admin/reports">
+                    <!-- <a class="nav-link {{ request()->is('admin/reports') ? 'active' : '' }}" href="/admin/reports">
                         <div class="sb-nav-link-icon"><i class="fas fa-bars"></i></div>
                         Data Laporan
-                    </a>
+                    </a> -->
                     <a class="nav-link {{ request()->is('admin/users') ? 'active' : '' }}" href="/admin/users">
                         <div class="sb-nav-link-icon"><i class="fas fa-bars"></i></div>
                         Data Costumer

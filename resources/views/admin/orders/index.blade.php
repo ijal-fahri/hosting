@@ -52,8 +52,7 @@
                                         <td>{{ $order->created_at }}</td>
                                         <td>Rp{{ number_format($order->total_price, 0, ',', '.') }}</td>
                                         <td>
-                                            <span
-                                                class="badge {{ $order->status == 'paid' ? 'bg-success' : 'bg-danger' }}">
+                                            <span class="badge {{ $order->status == 'paid' ? 'bg-success' : 'bg-danger' }}">
                                                 {{ ucfirst($order->status) }}
                                             </span>
                                         </td>
@@ -88,7 +87,28 @@
                     <div class="modal-body">
                         <h6>Nama Pelanggan: {{ $order->user_id }}</h6>
                         <p><strong>Alamat Pengiriman:</strong> {{ $order->alamat }}</p>
-                        <p><strong>Status Pembayaran:</strong> {{ ucfirst($order->payment_status) }}</p>
+                        <p><strong>Status Pembayaran:</strong> {{ ucfirst($order->status) }}</p>
+
+                        <!-- Add status update form -->
+                        <form id="updateStatusForm{{ $order->id }}" class="mt-3">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Update Status</label>
+                                <select class="form-select" name="status" required>
+                                    <option value="Pending" {{ $order->status == 'Pending' ? 'selected' : '' }}>Pending
+                                    </option>
+                                    <option value="Processed" {{ $order->status == 'Processed' ? 'selected' : '' }}>Processed
+                                    </option>
+                                    <option value="Delivery" {{ $order->status == 'Delivery' ? 'selected' : '' }}>Delivery
+                                    </option>
+                                    <option value="Completed" {{ $order->status == 'Completed' ? 'selected' : '' }}>Completed
+                                    </option>
+                                    <option value="Cancelled" {{ $order->status == 'Cancelled' ? 'selected' : '' }}>Cancelled
+                                    </option>
+                                </select>
+                            </div>
+                        </form>
+
                         <h6>Produk yang Dipesan:</h6>
                         <ul>
                             @foreach($order->orderItems as $item)
@@ -99,7 +119,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button type="button" class="btn btn-primary">Update Status</button>
+                        <button type="button" class="btn btn-primary" onclick="updateOrderStatus({{ $order->id }})">Update
+                            Status</button>
                     </div>
                 </div>
             </div>
@@ -120,6 +141,36 @@
             responsive: true
         });
     });
+
+    async function updateOrderStatus(orderId) {
+        try {
+            const form = document.getElementById('updateStatusForm' + orderId);
+            const formData = new FormData(form);
+
+            const response = await fetch(`/admin/orders/${orderId}/update-status`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    status: formData.get('status')
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert(result.message);
+                location.reload(); // Reload page to show updated status
+            } else {
+                throw new Error(result.message || 'Terjadi kesalahan');
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
 </script>
 
 </html>

@@ -259,7 +259,7 @@
 
                     // Update hidden inputs
                     document.getElementById('serviceInput').value = serviceSelect.value;
-                    document.getElementById('shippingCostInput').value = shippingCost;
+                    document.getElementById('shippingCostInput').value = total;
 
                     // Update price display
                     document.getElementById('shippingCost').innerText = formatRupiah(shippingCost);
@@ -273,6 +273,47 @@
                         minimumFractionDigits: 0
                     }).format(number);
                 }
+
+                document.getElementById('orderForm').addEventListener('submit', async function (e) {
+                    e.preventDefault();
+
+                    // Check if shipping service is selected
+                    const serviceSelect = document.getElementById('service');
+                    if (!serviceSelect || !serviceSelect.value) {
+                        alert('Silakan pilih layanan pengiriman terlebih dahulu');
+                        return;
+                    }
+
+                    // Calculate total price (subtotal + shipping cost)
+                    const subtotal = {{ $subtotal ?? 0 }};
+                    const shippingCost = parseInt(serviceSelect.options[serviceSelect.selectedIndex].dataset.cost || 0);
+                    const totalPrice = subtotal + shippingCost;
+
+                    // Update hidden inputs
+                    document.getElementById('shippingCostInput').value = totalPrice;
+                    document.getElementById('serviceInput').value = serviceSelect.value;
+
+                    try {
+                        const formData = new FormData(this);
+                        const response = await fetch(this.action, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            alert(result.message);
+                            if (result.redirect) {
+                                window.location.href = result.redirect;
+                            }
+                        } else {
+                            throw new Error(result.message || 'Terjadi kesalahan');
+                        }
+                    } catch (error) {
+                        alert(error.message);
+                    }
+                });
             </script>
 
             <div id="total-akhir" class="mt-4 text-lg font-bold text-gray-800"></div>
@@ -352,47 +393,6 @@
                         kotaSelect.innerHTML += `<option value="${k.city_id}">${k.city_name}</option>`;
                     });
                 });
-        });
-
-        document.getElementById('orderForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            // Check if shipping service is selected
-            const serviceSelect = document.getElementById('service');
-            if (!serviceSelect || !serviceSelect.value) {
-                alert('Silakan pilih layanan pengiriman terlebih dahulu');
-                return;
-            }
-
-            // Get shipping cost and service
-            const shippingCost = serviceSelect.options[serviceSelect.selectedIndex].dataset.cost;
-            const selectedService = serviceSelect.value;
-
-            // Update hidden inputs
-            document.getElementById('shippingCostInput').value = shippingCost;
-            document.getElementById('serviceInput').value = selectedService;
-            document.getElementById('totalPriceInput').value = {{ $subtotal ?? 0 }} + parseInt(shippingCost);
-
-            try {
-                const formData = new FormData(this);
-                const response = await fetch(this.action, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert(result.message);
-                    if (result.redirect) {
-                        window.location.href = result.redirect;
-                    }
-                } else {
-                    throw new Error(result.message || 'Terjadi kesalahan');
-                }
-            } catch (error) {
-                alert(error.message);
-            }
         });
     </script>
 

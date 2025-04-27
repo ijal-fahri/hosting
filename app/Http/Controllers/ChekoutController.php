@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Log;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
@@ -126,7 +127,7 @@ class ChekoutController extends Controller
                 'payment_method' => 'required|in:cod,midtrans'
             ]);
 
-            
+
             $cartItems = Cart::whereIn('id', json_decode($request->selected_items))->get();
             $weight = $cartItems->sum(function ($item) {
                 return $item->quantity * ($item->product->weight ?? 1000);
@@ -143,19 +144,19 @@ class ChekoutController extends Controller
                 'total_price' => $request->shipping_cost + ($subtotal ?? 0),
                 'masukan' => $request->masukan,
                 'alamat' => $request->alamat,
-                'payment_photo' => null, 
+                'payment_photo' => null,
                 'status' => 'Pending'
             ]);
 
-           
+
             foreach ($cartItems as $item) {
                 $order->orderItems()->create([
                     'product_id' => $item->product_id,
                     'quantity' => $item->quantity,
-                    'price' => $item->product->price
+                    'price' => $request->shipping_cost + ($subtotal ?? 0),
                 ]);
 
-                
+
                 $item->product->decrement('stock', $item->quantity);
                 $item->delete();
             }
@@ -196,7 +197,7 @@ class ChekoutController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        
+
     }
 
     /**
