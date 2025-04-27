@@ -84,21 +84,6 @@
                                 <h3 class="text-lg font-semibold text-gray-700 hover:text-brand transition">
                                     {{ $item->product->name }}
                                 </h3>
-                                {{-- <p class="text-sm text-gray-500 mt-1">Merah • M • 6–12 bulan</p> --}}
-                                {{-- <div class="mt-4 inline-flex items-center bg-gray-100 rounded-full overflow-hidden">
-                                    <button class="px-3 py-1 hover:bg-gray-200 transition"><svg
-                                            xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600"
-                                            fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" />
-                                        </svg></button>
-                                    <span class="px-4 py-1 font-medium text-gray-700">1</span>
-                                    <button class="px-3 py-1 hover:bg-gray-200 transition"><svg
-                                            xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600"
-                                            fill="currentColor" viewBox="0 0 20 20">
-                                            <path
-                                                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" />
-                                        </svg></button>
-                                </div> --}}
                             </div>
                             <div class="text-right mt-4 sm:mt-0">
                                 <p class="text-xl font-bold text-gray-900">Rp
@@ -107,7 +92,6 @@
                             </div>
                         </article>
                     @endforeach
-                    <!-- Produk lain -->
                 </div>
             </div>
 
@@ -222,6 +206,10 @@
                     const form = document.getElementById('checkCostForm');
                     const formData = new FormData(form);
 
+                    // Store selected values in hidden inputs
+                    document.getElementById('destinationInput').value = document.getElementById('destination').value;
+                    document.getElementById('courierInput').value = document.getElementById('courier').value;
+
                     try {
                         const response = await fetch('{{ route("checkCost") }}', {
                             method: 'POST',
@@ -251,6 +239,9 @@
                                 </div>
                             `;
                             shippingOptions.classList.remove('hidden');
+
+                            // Show the order form after shipping options are loaded
+                            document.getElementById('orderForm').classList.remove('hidden');
                         } else {
                             alert(result.message);
                         }
@@ -261,20 +252,18 @@
                 }
 
                 function updateTotal() {
-                    const subtotal = {{ $subtotal ?? 0 }}; // Add null coalescing operator
+                    const subtotal = {{ $subtotal ?? 0 }};
                     const serviceSelect = document.getElementById('service');
                     const shippingCost = parseInt(serviceSelect.options[serviceSelect.selectedIndex].dataset.cost || 0);
                     const total = subtotal + shippingCost;
 
-                    // Update tampilan desktop
+                    // Update hidden inputs
+                    document.getElementById('serviceInput').value = serviceSelect.value;
+                    document.getElementById('shippingCostInput').value = shippingCost;
+
+                    // Update price display
                     document.getElementById('shippingCost').innerText = formatRupiah(shippingCost);
                     document.getElementById('totalPrice').innerText = formatRupiah(total);
-
-                    // Update tampilan mobile if exists
-                    const mobileTotal = document.getElementById('mobileTotal');
-                    if (mobileTotal) {
-                        mobileTotal.innerText = formatRupiah(total);
-                    }
                 }
 
                 function formatRupiah(number) {
@@ -316,71 +305,95 @@
             <!-- Payment Method and Pay Button -->
             <form id="orderForm" action="{{ route('cekot.store') }}" method="POST">
                 @csrf
+                <input type="hidden" name="selected_items" value="{{ json_encode($items->pluck('id')) }}">
                 <input type="hidden" name="shipping_cost" id="shippingCostInput">
-                <input type="hidden" name="total_price" id="totalPriceInput">
-                <input type="hidden" name="service" id="selectedServiceInput">
+                <input type="hidden" name="courier" id="courierInput">
+                <input type="hidden" name="service" id="serviceInput">
+                <input type="hidden" name="destination" id="destinationInput">
 
-                <!-- Payment Method -->
-                <div class="bg-white rounded-2xl shadow-lg p-6">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Metode Pembayaran</h2>
-                    <ul class="space-y-4">
-                        <li>
-                            <label
-                                class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-brand transition focus-within:ring-2 focus-within:ring-brand">
-                                <input type="radio" name="payment_method" value="cod" class="form-radio text-brand"
-                                    required />
-                                <span class="ml-3 text-gray-700">COD</span>
-                            </label>
-                        </li>
-                        <li>
-                            <label
-                                class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-brand transition focus-within:ring-2 focus-within:ring-brand">
-                                <input type="radio" name="payment_method" value="midtrans" class="form-radio text-brand"
-                                    required />
-                                <span class="ml-3 text-gray-700">Midtrans</span>
-                            </label>
-                        </li>
-                    </ul>
+                <!-- Alamat Pengiriman -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Alamat Lengkap</label>
+                    <textarea name="alamat" class="mt-1 block w-full rounded-md border-gray-300" required></textarea>
                 </div>
 
-                <!-- Pay Button -->
-                <button type="submit"
-                    class="w-full bg-brand text-white py-3 rounded-2xl font-semibold uppercase shadow-md hover:shadow-lg active:scale-95 transform transition">
+                <!-- Catatan -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Catatan (Opsional)</label>
+                    <textarea name="masukan" class="mt-1 block w-full rounded-md border-gray-300"></textarea>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Metode Pembayaran</label>
+                    <select name="payment_method" class="mt-1 block w-full rounded-md border-gray-300" required>
+                        <option value="">Pilih Metode Pembayaran</option>
+                        <option value="cod">COD</option>
+                        <option value="midtrans">Midtrans</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full bg-brand text-white py-3 rounded-2xl font-semibold">
                     Pesan Sekarang
                 </button>
             </form>
         </aside>
     </main>
 
-    <!-- Mobile Footer Bar -->
-    {{-- <div class="lg:hidden fixed bottom-0 left-0 w-full bg-white shadow-inner border-t z-50">
-        <div class="flex items-center justify-between max-w-7xl mx-auto px-6 py-4">
-            <div>
-                <p class="text-sm text-gray-600">Total</p>
-                <p class="text-lg font-bold text-gray-900" id="mobileTotal">
-                    Rp {{ number_format($subtotal, 0, ',', '.') }}
-                </p>
-            </div>
-            <button
-                class="bg-brand text-white px-6 py-2 rounded-2xl font-semibold uppercase shadow-md hover:shadow-lg active:scale-95 transition">
-                Bayar
-            </button>
-        </div>
-    </div> --}}
-</body>
-<script>
-    document.getElementById('provinsi').addEventListener('change', function () {
-        let provinceId = this.value;
-        fetch(`/get-cities/${provinceId}`)
-            .then(res => res.json())
-            .then(data => {
-                let kotaSelect = document.getElementById('kota');
-                kotaSelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
-                data.forEach(k => {
-                    kotaSelect.innerHTML += `<option value="${k.city_id}">${k.city_name}</option>`;
+    <script>
+        document.getElementById('provinsi').addEventListener('change', function () {
+            let provinceId = this.value;
+            fetch(`/get-cities/${provinceId}`)
+                .then(res => res.json())
+                .then(data => {
+                    let kotaSelect = document.getElementById('kota');
+                    kotaSelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
+                    data.forEach(k => {
+                        kotaSelect.innerHTML += `<option value="${k.city_id}">${k.city_name}</option>`;
+                    });
                 });
-            });
-    });
-</script>
+        });
+
+        document.getElementById('orderForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Check if shipping service is selected
+            const serviceSelect = document.getElementById('service');
+            if (!serviceSelect || !serviceSelect.value) {
+                alert('Silakan pilih layanan pengiriman terlebih dahulu');
+                return;
+            }
+
+            // Get shipping cost and service
+            const shippingCost = serviceSelect.options[serviceSelect.selectedIndex].dataset.cost;
+            const selectedService = serviceSelect.value;
+
+            // Update hidden inputs
+            document.getElementById('shippingCostInput').value = shippingCost;
+            document.getElementById('serviceInput').value = selectedService;
+            document.getElementById('totalPriceInput').value = {{ $subtotal ?? 0 }} + parseInt(shippingCost);
+
+            try {
+                const formData = new FormData(this);
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(result.message);
+                    if (result.redirect) {
+                        window.location.href = result.redirect;
+                    }
+                } else {
+                    throw new Error(result.message || 'Terjadi kesalahan');
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    </script>
 
 </html>

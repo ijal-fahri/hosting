@@ -115,37 +115,39 @@ class ChekoutController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validasi input
-            $request->validate([
+            // Validate the request
+            $validated = $request->validate([
+                'destination' => 'required|string',
+                'courier' => 'required|string',
                 'service' => 'required|string',
                 'alamat' => 'required|string',
                 'masukan' => 'nullable|string',
-                'pay' => 'required|in:cod,midtrans',
-                'selected_items' => 'required'
+                'shipping_cost' => 'required|numeric',
+                'payment_method' => 'required|in:cod,midtrans'
             ]);
 
-            // Ambil items dari cart
-            $itemIds = json_decode($request->selected_items, true);
-            $cartItems = Cart::with('product')->whereIn('id', $itemIds)->get();
-
-            // Hitung total
-            $subtotal = $cartItems->sum(function ($item) {
-                return $item->product->price * $item->quantity;
+            
+            $cartItems = Cart::whereIn('id', json_decode($request->selected_items))->get();
+            $weight = $cartItems->sum(function ($item) {
+                return $item->quantity * ($item->product->weight ?? 1000);
             });
 
-            // Buat order
+            // Create order
             $order = Order::create([
                 'user_id' => auth()->id(),
-                'total_price' => $subtotal,
-                'shipping_cost' => $request->shipping_cost,
-                'payment_method' => $request->pay,
+                'origin' => 'Bogor',
+                'destination' => $request->destination,
+                'courier' => $request->courier,
                 'service' => $request->service,
-                'status' => 'pending',
+                'weight' => $weight,
+                'total_price' => $request->shipping_cost + ($subtotal ?? 0),
                 'masukan' => $request->masukan,
-                'alamat' => $request->alamat
+                'alamat' => $request->alamat,
+                'payment_photo' => null, 
+                'status' => 'Pending'
             ]);
 
-            // Pindahkan items dari cart ke order_items
+           
             foreach ($cartItems as $item) {
                 $order->orderItems()->create([
                     'product_id' => $item->product_id,
@@ -153,26 +155,23 @@ class ChekoutController extends Controller
                     'price' => $item->product->price
                 ]);
 
-                // Hapus item dari cart
+                
+                $item->product->decrement('stock', $item->quantity);
                 $item->delete();
             }
 
-            // Redirect sesuai metode pembayaran
-            if ($request->pay === 'midtrans') {
-                // Redirect ke halaman pembayaran Midtrans
-                return redirect()->route('payment.midtrans', $order->id);
-            } else {
-                // COD - redirect ke halaman sukses
-                return redirect()
-                    ->route('orders.success', $order->id)
-                    ->with('success', 'Pesanan berhasil dibuat!');
-            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Pesanan berhasil dibuat!',
+                'redirect' => route('shop.index', $order->id)
+            ]);
 
         } catch (\Exception $e) {
             \Log::error('Order creation error: ' . $e->getMessage());
-            return back()
-                ->with('error', 'Gagal membuat pesanan: ' . $e->getMessage())
-                ->withInput();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal membuat pesanan: ' . $e->getMessage()
+            ], 422);
         }
     }
 

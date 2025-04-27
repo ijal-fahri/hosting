@@ -20,11 +20,16 @@ class Order extends Model
         'courier',
         'service',
         'weight',
-        'tipe_hp',
-        'masukkan',
-        'alamat',
         'total_price',
+        'masukan',
+        'alamat',
         'payment_photo',
+        'status'
+    ];
+
+    protected $casts = [
+        'total_price' => 'decimal:2',
+        'weight' => 'integer',
     ];
 
     // Relasi ke OrderItems
