@@ -48,7 +48,7 @@
                                 @forelse($orders as $order)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $order->user_id }}</td>
+                                        <td>{{ $order->user->name }}</td>
                                         <td>{{ $order->created_at }}</td>
                                         <td>Rp{{ number_format($order->total_price, 0, ',', '.') }}</td>
                                         <td>
@@ -85,7 +85,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <h6>Nama Pelanggan: {{ $order->user_id }}</h6>
+                        <h6>Nama Pelanggan: {{ $order->user->name }}</h6>
                         <p><strong>Alamat Pengiriman:</strong> {{ $order->alamat }}</p>
                         <p><strong>Status Pembayaran:</strong> {{ ucfirst($order->status) }}</p>
 

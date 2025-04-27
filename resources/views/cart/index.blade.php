@@ -109,7 +109,7 @@
                     @foreach ($cartItems as $item)
                         <div class="flex flex-col md:flex-row items-center gap-4 border border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition-all duration-300 hover:ring-2 hover:ring-primary"
                             data-price="{{ $item->product->price }}" data-quantity="{{ $item->quantity }}"
-                            data-id="{{ $item->id }}">
+                            data-id="{{ $item->id }}" data-stock="{{ $item->product->stock }}">
                             <input type="checkbox" class="select-product w-5 h-5 mt-1">
                             <img src="{{ asset('storage/' . $item->product->photo) }}" alt="Sepatu Sneakers"
                                 class="w-20 h-20 object-cover rounded-lg shadow-md">
@@ -129,7 +129,8 @@
                                 </button>
                             </div>
                             <p class="total-price font-bold text-lg">Rp
-                                {{ number_format($item->product->price * $item->quantity, 2) }}</p>
+                                {{ number_format($item->product->price * $item->quantity, 2) }}
+                            </p>
                             <!-- Tombol Hapus Item -->
                             <form action="{{ route('item.delete', $item->id) }}" method="POST"
                                 id="delete-form-{{ $item->id }}">
@@ -178,7 +179,7 @@
 
         <!-- Script JavaScript -->
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 const cartItems = document.getElementById('cart-items');
                 const totalHargaElement = document.getElementById('total-harga');
 
@@ -201,15 +202,29 @@
                     totalHargaElement.textContent = `Rp ${totalHarga.toLocaleString()}`;
                 }
 
-                cartItems.addEventListener('click', function(e) {
+                cartItems.addEventListener('click', function (e) {
                     const item = e.target.closest('[data-price]');
                     if (!item) return;
 
                     // Increment / Decrement
                     if (e.target.closest('.increment') || e.target.closest('.decrement')) {
                         let quantity = parseInt(item.getAttribute('data-quantity'));
+                        const stock = parseInt(item.getAttribute('data-stock'));
 
                         if (e.target.closest('.increment')) {
+                            // Check if incrementing would exceed stock
+                            if (quantity >= stock) {
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    icon: 'error',
+                                    title: 'Stok tidak mencukupi!',
+                                    text: `Stok tersisa: ${stock}`,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                return;
+                            }
                             quantity++;
                         } else if (e.target.closest('.decrement') && quantity > 1) {
                             quantity--;
@@ -218,16 +233,16 @@
                         const id = item.getAttribute('data-id');
 
                         fetch("{{ route('cart.updateQuantity') }}", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                                },
-                                body: JSON.stringify({
-                                    id: id,
-                                    quantity: quantity
-                                })
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                id: id,
+                                quantity: quantity
                             })
+                        })
                             .then(res => res.json())
                             .then(data => {
                                 if (data.success) {
@@ -286,7 +301,7 @@
 
                 updateTotal();
 
-                document.getElementById('checkout-form').addEventListener('submit', function(e) {
+                document.getElementById('checkout-form').addEventListener('submit', function (e) {
                     const selected = [];
                     document.querySelectorAll('.select-product:checked').forEach(cb => {
                         selected.push(cb.closest('[data-id]').getAttribute('data-id'));

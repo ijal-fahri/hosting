@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use App\Models\Product;
+use App\Observers\ProductObserver;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -25,6 +27,8 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Product::observe(ProductObserver::class);
+
         $this->configureRateLimiting();
 
         $this->routes(function () {
