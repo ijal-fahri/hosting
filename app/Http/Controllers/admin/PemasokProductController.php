@@ -22,33 +22,66 @@ class PemasokProductController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'code' => 'nullable|unique:products|numeric',
-            'price' => 'nullable|numeric|min:0',
-            'stock' => 'nullable|integer|min:0',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'status' => 'nullable|in:aktif,nonaktif',
-            'diskon' => 'nullable|numeric|min:0|max:100',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'code' => 'required|unique:products|numeric',
+                'price' => 'required|numeric|min:0',
+                'stock' => 'required|integer|min:0',
+                'photo' => 'nullable', // Ubah validasi photo jadi nullable saja
+                'status' => 'required|in:aktif,nonaktif',
+                'diskon' => 'nullable|numeric|min:0|max:100',
+            ]);
 
-        $harga_diskon = $request->price - ($request->price * ($request->diskon / 100));
-        $photoPath = $request->file('photo') ? $request->file('photo')->store('products', 'public') : null;
+            // Hitung harga diskon dengan pengecekan
+            $harga_diskon = $request->price;
+            if ($request->filled('diskon')) {
+                $harga_diskon = $request->price - ($request->price * ($request->diskon / 100));
+            }
 
-        Product::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'code' => $request->code,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'photo' => $photoPath,
-            'status' => $request->status,
-            'diskon' => $request->diskon,
-            'harga_diskon' => $harga_diskon,
-        ]);
+            // Upload foto jika ada
+            $photoPath = null;
+            if ($request->hasFile('photo')) {
+                $photoPath = $request->file('photo')->store('products', 'public');
+            }
 
-        return redirect()->route('staff.products.index')->with('success', 'Produk berhasil ditambahkan!');
+            // Buat produk
+            $product = Product::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'code' => $request->code,
+                'price' => $request->price,
+                'stock' => $request->stock,
+                'photo' => $photoPath,
+                'status' => $request->status,
+                'diskon' => $request->diskon ?? 0,
+                'harga_diskon' => $harga_diskon,
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Produk berhasil ditambahkan!'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Product creation error: ' . $e->getMessage());
+
+            // Tambahkan log untuk debugging mime type
+            if ($request->hasFile('photo')) {
+                \Log::info('Uploaded file mime type: ' . $request->file('photo')->getMimeType());
+            }
+
+            // Hapus foto yang sudah diupload jika ada error
+            if (isset($photoPath) && Storage::exists('public/' . $photoPath)) {
+                Storage::delete('public/' . $photoPath);
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menambahkan produk: ' . $e->getMessage()
+            ], 422);
+        }
     }
 
     public function show(string $id)
@@ -67,7 +100,7 @@ class PemasokProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'code' => 'required|numeric|unique:products,code,' . $id,
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
@@ -76,6 +109,7 @@ class PemasokProductController extends Controller
             'diskon' => 'nullable|numeric|min:0|max:100',
         ]);
 
+        $harga_diskon = $request->price - ($request->price * ($request->diskon / 100));
         $product = Product::findOrFail($id);
 
         if ($request->file('photo')) {
@@ -85,8 +119,6 @@ class PemasokProductController extends Controller
             $photoPath = $request->file('photo')->store('products', 'public');
             $product->photo = $photoPath;
         }
-
-        $harga_diskon = $request->price - ($request->price * ($request->diskon / 100));
 
         $product->update([
             'name' => $request->name,
@@ -105,13 +137,13 @@ class PemasokProductController extends Controller
     public function destroy(string $id)
     {
         $product = Product::findOrFail($id);
-    
+
         if ($product->photo && Storage::exists('public/' . $product->photo)) {
             Storage::delete('public/' . $product->photo);
         }
-    
+
         $product->delete();
-    
+
         return redirect()->route('staff.products.index')->with('success', 'Produk berhasil dihapus!');
-    }    
+    }
 }

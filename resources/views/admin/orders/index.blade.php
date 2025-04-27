@@ -43,8 +43,7 @@
                                     <th>Total Harga</th>
                                     <th>Status Pembayaran</th>
                                     <th>Status Pengiriman</th>
-                                    <th>Alamat Pengiriman</th>
-                                    <th>Detail Pesanan</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -67,7 +66,6 @@
                                                 {{ ucfirst($order->shipping_status) }}
                                             </span>
                                         </td>
-                                        <td>{{ $order->shipping_address }}</td>
                                         <td>
                                             <button class="btn btn-info btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#orderDetailModal{{ $order->id }}">Lihat Detail</button>
@@ -75,7 +73,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center">Tidak ada data pesanan.</td>
+                                        <td colspan="8" class="text-center">Tidak ada data pesanan.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -88,44 +86,46 @@
 
     <!-- Modal for Order Details -->
     @foreach($orders as $order)
-    <div class="modal fade" id="orderDetailModal{{ $order->id }}" tabindex="-1" aria-labelledby="orderDetailModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="orderDetailModalLabel">Detail Pesanan - {{ $order->order_number }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <h6>Nama Pelanggan: {{ $order->customer_name }}</h6>
-                    <p><strong>Alamat Pengiriman:</strong> {{ $order->shipping_address }}</p>
-                    <p><strong>Status Pembayaran:</strong> {{ ucfirst($order->payment_status) }}</p>
-                    <p><strong>Status Pengiriman:</strong> {{ ucfirst($order->shipping_status) }}</p>
-                    <h6>Produk yang Dipesan:</h6>
-                    <ul>
-                        @foreach($order->orderItems as $item)
-                            <li>{{ $item->product_name }} - Rp{{ number_format($item->price, 0, ',', '.') }} ({{ $item->quantity }} pcs)</li>
-                        @endforeach
-                    </ul>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary">Update Status</button>
+        <div class="modal fade" id="orderDetailModal{{ $order->id }}" tabindex="-1" aria-labelledby="orderDetailModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="orderDetailModalLabel">Detail Pesanan - {{ $order->order_number }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>Nama Pelanggan: {{ $order->customer_name }}</h6>
+                        <p><strong>Alamat Pengiriman:</strong> {{ $order->shipping_address }}</p>
+                        <p><strong>Status Pembayaran:</strong> {{ ucfirst($order->payment_status) }}</p>
+                        <p><strong>Status Pengiriman:</strong> {{ ucfirst($order->shipping_status) }}</p>
+                        <h6>Produk yang Dipesan:</h6>
+                        <ul>
+                            @foreach($order->orderItems as $item)
+                                <li>{{ $item->product_name }} - Rp{{ number_format($item->price, 0, ',', '.') }}
+                                    ({{ $item->quantity }} pcs)</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="button" class="btn btn-primary">Update Status</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     @endforeach
 </body>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous"></script>
 <script src="{{ asset('asset-landing-admin/js/scripts.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
 <script src="{{ asset('asset-landing-admin/assets/demo/chart-area-demo.js') }}"></script>
 <script src="{{ asset('asset-landing-admin/assets/demo/chart-bar-demo.js') }}"></script>
 <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#myTable').DataTable({
             responsive: true
         });

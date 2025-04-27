@@ -82,7 +82,8 @@
                                 class="w-32 h-32 sm:w-36 sm:h-36 rounded-lg object-cover object-center" />
                             <div class="flex-1 px-6 mt-4 sm:mt-0">
                                 <h3 class="text-lg font-semibold text-gray-700 hover:text-brand transition">
-                                    {{ $item->product->name }}</h3>
+                                    {{ $item->product->name }}
+                                </h3>
                                 {{-- <p class="text-sm text-gray-500 mt-1">Merah • M • 6–12 bulan</p> --}}
                                 {{-- <div class="mt-4 inline-flex items-center bg-gray-100 rounded-full overflow-hidden">
                                     <button class="px-3 py-1 hover:bg-gray-200 transition"><svg
@@ -101,7 +102,8 @@
                             </div>
                             <div class="text-right mt-4 sm:mt-0">
                                 <p class="text-xl font-bold text-gray-900">Rp
-                                    {{ number_format($item->product->price * $item->quantity, 2) }}</p>
+                                    {{ number_format($item->product->price * $item->quantity, 2) }}
+                                </p>
                             </div>
                         </article>
                     @endforeach
@@ -116,57 +118,57 @@
                     <h2 class="text-lg font-medium text-gray-700">Cek Ongkir</h2>
                     <h3 class="text-lg font-medium text-gray-700">Kota Asal</h3>
 
-
                     <!-- Form Cek Ongkir -->
-                    <form action="{{ route('checkCost') }}" method="POST">
+                    <form id="checkCostForm" class="space-y-4">
                         @csrf
                         <input type="hidden" name="selected_items" value="{{ json_encode($items->pluck('id')) }}">
 
-                        <!-- Kota Asal -->
-                        <select name="origin" id="origin" class="w-full p-3 border border-gray-300 rounded-lg mb-4">
-                            @if (!empty($bogorCity))
-                                <option value="{{ $bogorCity['city_id'] }}" selected>
-                                    {{ $bogorCity['city_name'] }}
-                                </option>
-                            @else
-                                <option value="">Data Kota Tidak Tersedia</option>
-                            @endif
-                        </select>
-
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Provinsi -->
-                            <select id="province" name="province" class="w-full p-3 border border-gray-300 rounded-lg">
-                                <option value="">Pilih Provinsi</option>
-                                @if (!empty($provinces))
-                                    @foreach ($provinces as $province)
-                                        <option value="{{ $province['province_id'] }}">{{ $province['province'] }}
-                                        </option>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Kota Asal</label>
+                                <select name="origin" id="origin" class="mt-1 block w-full rounded-md border-gray-300"
+                                    required>
+                                    <option value="">Pilih Kota Asal</option>
+                                    @foreach($cities as $city)
+                                        <option value="{{ $city['city_id'] }}">{{ $city['city_name'] }}</option>
                                     @endforeach
-                                @endif
-                            </select>
+                                </select>
+                            </div>
 
-                            <!-- Kota Tujuan -->
-                            <select id="destination" name="destination"
-                                class="w-full p-3 border border-gray-300 rounded-lg">
-                                <option value="">-- Pilih Kota Tujuan --</option>
-                            </select>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Kota Tujuan</label>
+                                <select name="destination" id="destination"
+                                    class="mt-1 block w-full rounded-md border-gray-300" required>
+                                    <option value="">Pilih Kota Tujuan</option>
+                                    @foreach($cities as $city)
+                                        <option value="{{ $city['city_id'] }}">{{ $city['city_name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                            <!-- Berat -->
-                            <input type="number" id="weight" name="weight" placeholder="Berat (gram)"
-                                class="w-full p-3 border border-gray-300 rounded-lg" />
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Kurir</label>
+                                <select name="courier" id="courier" class="mt-1 block w-full rounded-md border-gray-300"
+                                    required>
+                                    <option value="">Pilih Kurir</option>
+                                    <option value="jne">JNE</option>
+                                    <option value="pos">POS</option>
+                                    <option value="tiki">TIKI</option>
+                                </select>
+                            </div>
 
-                            <!-- Kurir -->
-                            <select id="courier" name="courier" class="w-full p-3 border border-gray-300 rounded-lg">
-                                <option value="">Pilih Kurir</option>
-                                <option value="jne">JNE</option>
-                                <option value="pos">POS</option>
-                                <option value="tiki">TIKI</option>
-                            </select>
+                            <input type="hidden" name="weight" value="1000">
                         </div>
 
-                        <button type="submit"
-                            class="mt-4 px-4 py-2 bg-orange-500 rounded-lg text-white font-semibold">Cek Ongkir</button>
+                        <button type="button" onclick="checkShippingCost()"
+                            class="w-full bg-brand text-white py-2 rounded-lg">
+                            Cek Ongkir
+                        </button>
                     </form>
+
+                    <div id="shippingOptions" class="mt-4 hidden">
+                        <!-- Shipping options will be populated here -->
+                    </div>
 
                     <!-- Form Simpan Pesanan -->
                     @if (!empty($costs))
@@ -183,8 +185,7 @@
                                     onchange="updateTotal()" required>
                                     <option value="" data-cost="0">-- Pilih Layanan --</option>
                                     @foreach ($costs[0]['costs'] as $item)
-                                        <option value="{{ $item['service'] }}"
-                                            data-cost="{{ $item['cost'][0]['value'] }}">
+                                        <option value="{{ $item['service'] }}" data-cost="{{ $item['cost'][0]['value'] }}">
                                             {{ $item['service'] }} - Rp
                                             {{ number_format($item['cost'][0]['value'], 0, ',', '.') }}
                                             (ETD: {{ $item['cost'][0]['etd'] }} hari)
@@ -217,143 +218,87 @@
             </div>
 
             <script>
-                function updateTotal() {
-                    const serviceSelect = document.getElementById('service');
-                    const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
-                    const cost = parseInt(selectedOption.getAttribute('data-cost')) || 0;
-                    const productTotal = {{ $items->sum(fn($item) => $item->product->price * $item->quantity) }};
-                    const total = productTotal + cost;
+                async function checkShippingCost() {
+                    const form = document.getElementById('checkCostForm');
+                    const formData = new FormData(form);
 
-                    document.getElementById('total_price').value = total;
+                    try {
+                        const response = await fetch('{{ route("checkCost") }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+
+                        const result = await response.json();
+
+                        if (result.status === 'success') {
+                            const shippingOptions = document.getElementById('shippingOptions');
+                            shippingOptions.innerHTML = `
+                                <div class="mt-4">
+                                    <label class="block text-sm font-medium text-gray-700">Pilih Layanan</label>
+                                    <select id="service" name="service" class="mt-1 block w-full rounded-md border-gray-300" onchange="updateTotal()">
+                                        <option value="">Pilih Layanan</option>
+                                        ${result.data.map(service => `
+                                            <option value="${service.service}" data-cost="${service.cost[0].value}">
+                                                ${service.service} - Rp ${new Intl.NumberFormat('id-ID').format(service.cost[0].value)}
+                                                (${service.cost[0].etd} hari)
+                                            </option>
+                                        `).join('')}
+                                    </select>
+                                </div>
+                            `;
+                            shippingOptions.classList.remove('hidden');
+                        } else {
+                            alert(result.message);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan saat mengecek ongkir');
+                    }
+                }
+
+                function updateTotal() {
+                    const subtotal = {{ $subtotal ?? 0 }}; // Add null coalescing operator
+                    const serviceSelect = document.getElementById('service');
+                    const shippingCost = parseInt(serviceSelect.options[serviceSelect.selectedIndex].dataset.cost || 0);
+                    const total = subtotal + shippingCost;
+
+                    // Update tampilan desktop
+                    document.getElementById('shippingCost').innerText = formatRupiah(shippingCost);
+                    document.getElementById('totalPrice').innerText = formatRupiah(total);
+
+                    // Update tampilan mobile if exists
+                    const mobileTotal = document.getElementById('mobileTotal');
+                    if (mobileTotal) {
+                        mobileTotal.innerText = formatRupiah(total);
+                    }
+                }
+
+                function formatRupiah(number) {
+                    return new Intl.NumberFormat('id-ID', {
+                        style: 'currency',
+                        currency: 'IDR',
+                        minimumFractionDigits: 0
+                    }).format(number);
                 }
             </script>
 
-
-
-            {{-- <div class="mt-4 text-gray-700 text-sm">
-                        @if (!$costs == '')
-                            @foreach ($costs as $item)
-                                <div class="">
-                                    <label for="name">Layanan: {{ $item['name'] }}</label>
-
-                                    @foreach ($item['costs'] as $cost)
-                                        <div class="mb-3">
-                                            <label for="service">Service: {{ $cost['service'] }}</label>
-
-                                            @foreach ($cost['cost'] as $price)
-                                                <div class="mb-3">
-                                                    <label for="price">Harga: {{ $price['value'] }} (est:
-                                                        {{ $price['etd'] }}) (hari)</label>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endforeach
-                        @endif
-                    </div> --}}
-
             <div id="total-akhir" class="mt-4 text-lg font-bold text-gray-800"></div>
-            </div>
-
-            <script>
-                // Ambil daftar provinsi saat halaman dimuat
-                fetch('/get-provinces')
-                    .then(res => res.json())
-                    .then(data => {
-                        let provinsiSelect = document.getElementById('provinsi');
-                        data.forEach(p => {
-                            provinsiSelect.innerHTML += `<option value="${p.province_id}">${p.province}</option>`;
-                        });
-                    });
-
-                // Ambil daftar kota saat provinsi dipilih
-                document.getElementById('province').addEventListener('change', function() {
-                    let provinceId = this.value;
-                    fetch(`/get-cities/${provinceId}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            let kotaSelect = document.getElementById('destination');
-                            kotaSelect.innerHTML = '<option value="">-- Pilih Kota --</option>';
-                            data.forEach(k => {
-                                kotaSelect.innerHTML += `<option value="${k.city_id}">${k.city_name}</option>`;
-                            });
-                        });
-                });
-
-                // Fungsi cek ongkir
-                // function cekOngkir() {
-                //     // let origin = 501; // ID kota asal, misalnya Semarang
-                //     let destination = document.getElementById('kota').value;
-                //     let weight = document.getElementById('berat').value;
-                //     let courier = document.getElementById('kurir').value;
-                //     const origin = document.getElementById('origin').value;
-
-                //     // Validasi input
-                //     if (!destination || !weight || !courier) {
-                //         alert('Silakan isi semua field terlebih dahulu!');
-                //         return;
-                //     }
-
-                //     // Kirim request ke server
-                //     fetch('/cekot/checkout/check-shipping-cost', {
-                //             method: 'POST',
-                //             headers: {
-                //                 'Content-Type': 'application/json',
-                //                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                //             },
-                //             body: JSON.stringify({
-                //                 origin,
-                //                 destination,
-                //                 weight,
-                //                 courier
-                //             })
-                //         })
-                //         .then(res => res.json())
-                //         .then(data => {
-                //             let hasil = document.getElementById('hasil-ongkir');
-                //             hasil.innerHTML = '';
-
-                //             if (data.error) {
-                //                 hasil.innerHTML = `<p>${data.error}</p>`;
-                //                 return;
-                //             }
-
-                //             data.forEach(service => {
-                //                 let biaya = service.cost[0].value;
-                //                 let etd = service.cost[0].etd;
-
-                //                 hasil.innerHTML +=
-                //                     `<p>${service.service} - Rp${biaya.toLocaleString('id-ID')} (${etd} hari)</p>`;
-
-                //                 // Hitung total akhir
-                //                 let totalAkhir = {{ $total }} + biaya;
-                //                 document.getElementById('total-akhir').innerHTML =
-                //                     `Total Akhir: <strong>Rp${totalAkhir.toLocaleString('id-ID')}</strong>`;
-                //             });
-                //         })
-                //         .catch(err => {
-                //             console.error('Gagal fetch ongkir:', err);
-                //             alert('Terjadi kesalahan saat cek ongkir.');
-                //         });
-                // }
-            </script>
             </div>
         </section>
 
         <!-- Sidebar Summary & Methods -->
         <aside class="space-y-6">
             <!-- Price Summary -->
-            @php
-                $subtotal = $total ?? 0; // 'total' dari controller checkout
-            @endphp
-
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">Ringkasan Harga</h2>
                 <dl class="space-y-2 text-sm text-gray-600">
                     <div class="flex justify-between">
                         <dt>Subtotal</dt>
-                        <dd id="subtotal">Rp {{ number_format($subtotal, 0, ',', '.') }}</dd>
+                        <dd id="subtotal">Rp {{ number_format($subtotal ?? 0, 0, ',', '.') }}</dd>
                     </div>
                     <div class="flex justify-between">
                         <dt>Ongkir</dt>
@@ -363,71 +308,47 @@
                 <div class="border-t mt-4 pt-4 flex justify-between items-center">
                     <span class="font-medium text-gray-800">Total</span>
                     <span class="text-2xl font-bold text-gray-900" id="totalPrice">
-                        Rp {{ number_format($subtotal, 0, ',', '.') }}
+                        Rp {{ number_format($subtotal ?? 0, 0, ',', '.') }}
                     </span>
                 </div>
             </div>
 
+            <!-- Payment Method and Pay Button -->
+            <form id="orderForm" action="{{ route('cekot.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="shipping_cost" id="shippingCostInput">
+                <input type="hidden" name="total_price" id="totalPriceInput">
+                <input type="hidden" name="service" id="selectedServiceInput">
 
-            <!-- Shipping Method -->
-            {{-- <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Metode Pengiriman</h2>
-                <ul class="space-y-4">
-                    <li>
-                        <label
-                            class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-brand transition focus-within:ring-2 focus-within:ring-brand">
-                            <input type="radio" name="ship" value="reguler" checked
-                                class="form-radio text-brand" />
-                            <span class="ml-3 text-gray-700">Reguler (3–5 hari)</span>
-                        </label>
-                    </li>
-                    <li>
-                        <label
-                            class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-brand transition focus-within:ring-2 focus-within:ring-brand">
-                            <input type="radio" name="ship" value="express" class="form-radio text-brand" />
-                            <span class="ml-3 text-gray-700">Express (1–2 hari)</span>
-                        </label>
-                    </li>
-                </ul>
-            </div> --}}
+                <!-- Payment Method -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Metode Pembayaran</h2>
+                    <ul class="space-y-4">
+                        <li>
+                            <label
+                                class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-brand transition focus-within:ring-2 focus-within:ring-brand">
+                                <input type="radio" name="payment_method" value="cod" class="form-radio text-brand"
+                                    required />
+                                <span class="ml-3 text-gray-700">COD</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label
+                                class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-brand transition focus-within:ring-2 focus-within:ring-brand">
+                                <input type="radio" name="payment_method" value="midtrans" class="form-radio text-brand"
+                                    required />
+                                <span class="ml-3 text-gray-700">Midtrans</span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
 
-            <!-- Payment Method -->
-            <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Metode Pembayaran</h2>
-                <ul class="space-y-4">
-                    {{-- <li>
-                        <label
-                            class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-brand transition focus-within:ring-2 focus-within:ring-brand">
-                            <input type="radio" name="pay" value="bank" checked class="form-radio text-brand" />
-                            <div class="ml-3 flex items-center space-x-2">
-                                <img src="/assets/bca.png" alt="BCA" class="w-6 h-auto" />
-                                <img src="/assets/mandiri.png" alt="Mandiri" class="w-6 h-auto" />
-                                <img src="/assets/bni.png" alt="BNI" class="w-6 h-auto" />
-                            </div>
-                        </label>
-                    </li>
-                    <li> --}}
-                    <label
-                        class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-brand transition focus-within:ring-2 focus-within:ring-brand">
-                        <input type="radio" name="pay" value="cod" class="form-radio text-brand" />
-                        <span class="ml-3 text-gray-700">COD</span>
-                    </label>
-                    </li>
-                    <li>
-                        <label
-                            class="flex items-center p-4 border border-gray-200 rounded-lg hover;border-brand transition focus-within:ring-2 focus-within:ring-brand">
-                            <input type="radio" name="pay" value="midtrans" class="form-radio text-brand" />
-                            <span class="ml-3 text-gray-700">Midtrans</span>
-                        </label>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Pay Button -->
-            <button
-                class="w-full bg-brand text-white py-3 rounded-2xl font-semibold uppercase shadow-md hover:shadow-lg active:scale-95 transform transition">
-                Pesan Sekarang
-            </button>
+                <!-- Pay Button -->
+                <button type="submit"
+                    class="w-full bg-brand text-white py-3 rounded-2xl font-semibold uppercase shadow-md hover:shadow-lg active:scale-95 transform transition">
+                    Pesan Sekarang
+                </button>
+            </form>
         </aside>
     </main>
 
@@ -445,10 +366,10 @@
                 Bayar
             </button>
         </div>
-    </div>     --}}
+    </div> --}}
 </body>
 <script>
-    document.getElementById('provinsi').addEventListener('change', function() {
+    document.getElementById('provinsi').addEventListener('change', function () {
         let provinceId = this.value;
         fetch(`/get-cities/${provinceId}`)
             .then(res => res.json())
@@ -460,54 +381,6 @@
                 });
             });
     });
-
-
-    // total
-    function updateTotal() {
-        const subtotal = {{ $subtotal }};
-        const serviceSelect = document.getElementById('service');
-        const shippingCost = parseInt(serviceSelect.options[serviceSelect.selectedIndex].dataset.cost || 0);
-
-        // Update tampilan harga ongkir dan total
-        document.getElementById('shippingCost').innerText = formatRupiah(shippingCost);
-        document.getElementById('totalPrice').innerText = formatRupiah(subtotal + shippingCost);
-    }
-
-    function formatRupiah(number) {
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(number);
-    }
-
-    function updateTotal() {
-        const subtotal = {{ $subtotal }};
-        const serviceSelect = document.getElementById('service');
-        const shippingCost = parseInt(serviceSelect.options[serviceSelect.selectedIndex].dataset.cost || 0);
-        const total = subtotal + shippingCost;
-
-        // Update tampilan desktop
-        document.getElementById('shippingCost').innerText = formatRupiah(shippingCost);
-        document.getElementById('totalPrice').innerText = formatRupiah(total);
-
-        // Update tampilan mobile
-        document.getElementById('mobileTotal').innerText = formatRupiah(total);
-
-        // Kalau pakai input hidden untuk kirim total:
-        const totalInput = document.getElementById('finalTotalInput');
-        if (totalInput) {
-            totalInput.value = total;
-        }
-    }
-
-    function formatRupiah(number) {
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(number);
-    }
 </script>
 
 </html>

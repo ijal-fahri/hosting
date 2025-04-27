@@ -19,7 +19,7 @@ class Product extends Model
         'photo',
         'status',
         'diskon',
-        'harga_diskon', 
+        'harga_diskon'
     ];
 
     // Tipe data cast untuk atribut tertentu

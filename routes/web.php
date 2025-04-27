@@ -81,5 +81,6 @@ Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])-
 Route::delete('/cart/deleteItem/{id}', [CartController::class, 'deleteItem'])->name(name: 'item.delete');
 
 Route::post('/cekot/checkout', [ChekoutController::class, 'checkout'])->name('checkout');
+Route::post('/cart/checkout', [ChekoutController::class, 'checkout'])->name('checkout.store');
 Route::post(uri: '/checkCost', action: [ChekoutController::class, 'checkShippingCost'])->name('checkCost');
 require __DIR__.'/auth.php';

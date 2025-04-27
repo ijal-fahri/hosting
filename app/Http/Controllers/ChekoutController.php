@@ -16,172 +16,90 @@ class ChekoutController extends Controller
      */
     public function index(Request $request)
     {
-        
-        
+
+
         return view('cekot.index', ['costs' => '']);
     }
 
     public function checkout(Request $request)
-{
-    // Ambil ID item dari request
-    $itemIds = json_decode($request->selected_items, true);
+    {
+        try {
+            // Get selected cart items
+            $itemIds = json_decode($request->selected_items);
+            $items = Cart::with('product')->whereIn('id', $itemIds)->get();
 
-    // Ambil data item dan relasi produknya
-    $items = Cart::with('product')->whereIn('id', $itemIds)->get();
+            // Calculate subtotal from cart items
+            $subtotal = $items->sum(function ($item) {
+                return $item->product->price * $item->quantity;
+            });
 
-    // Hitung total harga semua item
-    $total = $items->sum(function ($item) {
-        return $item->product->price * $item->quantity;
-    });
+            // Get cities from RajaOngkir
+            $response = Http::withHeaders([
+                'key' => '316e4f0570ad8482913c3cd334873531'
+            ])->get('https://api.rajaongkir.com/starter/city');
 
-    // Ambil daftar provinsi dari API RajaOngkir
-    $provincesResponse = Http::withHeaders([
-        'key' => '316e4f0570ad8482913c3cd334873531'
-    ])->get('https://api.rajaongkir.com/starter/province');
+            if (!$response->successful()) {
+                throw new \Exception('Gagal mengambil data kota');
+            }
 
-    $provincesData = $provincesResponse->json();
-    $provinces = $provincesData['rajaongkir']['results'];
+            $citiesData = $response->json();
+            $cities = $citiesData['rajaongkir']['results'] ?? [];
 
-    // Ambil ID provinsi dari request jika tersedia
-    $provinceId = $request->province_id;
+            return view('cekot.index', compact('items', 'subtotal', 'cities'));
 
-    $response = Http::withHeaders([
-        'key' => '316e4f0570ad8482913c3cd334873531'
-    ])->get('https://api.rajaongkir.com/starter/city');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
 
-    $cities = $response['rajaongkir']['results'];
+    public function getCities($provinceId)
+    {
+        $citiesResponse = Http::withHeaders([
+            'key' => '316e4f0570ad8482913c3cd334873531'
+        ])->get("https://api.rajaongkir.com/starter/city?province=$provinceId");
 
-    $bogorCity = collect($cities)->firstWhere('city_name', 'Bogor');
-    $cost = null;
+        $citiesData = $citiesResponse->json();
 
+        return response()->json($citiesData['rajaongkir']['results']);
+    }
 
+    public function checkShippingCost(Request $request)
+    {
+        try {
+            $request->validate([
+                'origin' => 'required',
+                'destination' => 'required',
+                'weight' => 'required|numeric',
+                'courier' => 'required|in:jne,pos,tiki'
+            ]);
 
-    // Kirim data ke view
-    return view('cekot.index', ['cities' => $cities, 'cost' => $cost, 'costs' => ''], compact('items', 'total', 'provinces', 'bogorCity'));
-}
+            $response = Http::withHeaders([
+                'key' => '316e4f0570ad8482913c3cd334873531'
+            ])->asForm()->post('https://api.rajaongkir.com/starter/cost', [
+                        'origin' => $request->origin,
+                        'destination' => $request->destination,
+                        'weight' => $request->weight,
+                        'courier' => $request->courier
+                    ]);
 
-public function getCities($provinceId)
-{
-    $citiesResponse = Http::withHeaders([
-        'key' => '316e4f0570ad8482913c3cd334873531'
-    ])->get("https://api.rajaongkir.com/starter/city?province=$provinceId");
+            if (!$response->successful()) {
+                throw new \Exception('Gagal mendapatkan data ongkir');
+            }
 
-    $citiesData = $citiesResponse->json();
+            $result = $response->json();
 
-    return response()->json($citiesData['rajaongkir']['results']);
-}
+            return response()->json([
+                'status' => 'success',
+                'data' => $result['rajaongkir']['results'][0]['costs']
+            ]);
 
-// public function checkCost(Request $request) 
-// {
-//     $itemIds = json_decode($request->selected_items, true);
-//     $items = Cart::with('product')->whereIn('id', $itemIds)->get();
-
-//     $total = $items->sum(fn($item) =>  $item->product->price * $item->quantity);
-
-//     // Ambil data provinsi
-//     $provinces = Http::withHeaders([
-//         'key' => '316e4f0570ad8482913c3cd334873531'
-//     ])->get('https://api.rajaongkir.com/starter/province')
-//       ->json()['rajaongkir']['results'];
-
-//     // Ambil data kota berdasarkan provinsi yang dipilih
-//     $provinceId = $request->province_id;
-//     $cities = [];
-
-//     if ($provinceId) {
-//         $cities = Http::withHeaders([
-//             'key' => '316e4f0570ad8482913c3cd334873531'
-//         ])->get("https://api.rajaongkir.com/starter/city?province={$provinceId}")
-//           ->json()['rajaongkir']['results'];
-//     }
-
-//     // Cek ongkos kirim jika data lengkap tersedia
-//     // $shippingCosts = [];
-//     // if ($request->origin && $request->destination && $request->weight && $request->courier) {
-//     //     $costResponse = Http::withHeaders([
-//     //         'key' => '316e4f0570ad8482913c3cd334873531',
-//     //     ])->post("https://api.rajaongkir.com/starter/cost", [
-//     //         'origin' => $request->origin,
-//     //         'destination' => $request->destination,
-//     //         'weight' => $request->weight,
-//     //         'courier' => $request->courier
-//     //     ]);
-
-//     //     $shippingCosts = $costResponse->json()['rajaongkir']['results'][0]['costs'] ?? [];
-//     // }
-
-//     return view('cekot.index', compact('items', 'total', 'provinces', 'cities', 'shippingCosts'));
-// }
-
-public function checkShippingCost(Request $request)
-{
-
-    // Ambil ID item dari request
-    $itemIds = json_decode($request->selected_items, true);
-
-    // Ambil data item dan relasi produknya
-    $items = Cart::with('product')->whereIn('id', $itemIds)->get();
-
-    // Hitung total harga semua item
-    $total = $items->sum(function ($item) {
-        return $item->product->price * $item->quantity;
-    });
-
-    $responseCity = Http::withHeaders([
-        'key' => '316e4f0570ad8482913c3cd334873531',
-        'content-type' => 'application/x-www-form-urlencoded',
-    ])->get('https://api.rajaongkir.com/starter/city');
-
-    $responseCost = Http::withHeaders([
-        'key' => '316e4f0570ad8482913c3cd334873531',
-    ])->asForm()->post('https://api.rajaongkir.com/starter/cost', [
-        'origin' => $request->origin,
-        'destination' => $request->destination,
-        'weight' => $request->weight,
-        'courier' => $request->courier
-    ]);
-
-
-    // Ambil ulang endpoint untuk data provinsi dan kota
-    // Ambil daftar provinsi dari API RajaOngkir
-    $provincesResponse = Http::withHeaders([
-        'key' => '316e4f0570ad8482913c3cd334873531'
-    ])->get('https://api.rajaongkir.com/starter/province');
-
-    $provincesData = $provincesResponse->json();
-    $provinces = $provincesData['rajaongkir']['results'];
-
-    // Ambil ID provinsi dari request jika tersedia
-    $provinceId = $request->province_id;
-
-    $response = Http::withHeaders([
-        'key' => '316e4f0570ad8482913c3cd334873531'
-    ])->get('https://api.rajaongkir.com/starter/city');
-
-    $cities = $response['rajaongkir']['results'];
-
-    $bogorCity = collect($cities)->firstWhere('city_name', 'Bogor');
-
-    // Ambil data kota dan biaya
-    $cities = $responseCity->json()['rajaongkir']['results'] ?? [];
-    $costs = $responseCost->json()['rajaongkir']['results'] ?? [];
-
-    // Jika gagal ambil biaya
-    // if (!$responseCost->successful() || empty($costs)) {
-    //     return response()->json(['error' => 'Tidak ada biaya pengiriman yang tersedia'], 404);
-    // }
-
-    // Return dua-duanya
-    // return response()->json([
-    //     'cities' => $cities,
-    //     'shipping_costs' => $costs
-    // ]);
-    // dd($request->all());
-
-
-    return view('cekot.index', ['cities' => $cities, 'costs' => $costs], compact('items', 'total', 'bogorCity', 'provinces'));
-}
-
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -196,32 +114,66 @@ public function checkShippingCost(Request $request)
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'origin' => 'required|string',
-            'destination' => 'required|string',
-            'courier' => 'required|string',
-            'service' => 'required|string',
-            'weight' => 'required|integer',
-            'total_price' => 'required|numeric',
-            'masukan' => 'nullable|string',
-            'alamat' => 'required|string',
-        ]);
-    
-        // Simpan order
-        $order = Order::create([
-            'user_id' => Auth::id(),
-            'origin' => $request->origin,
-            'destination' => $request->destination,
-            'courier' => $request->courier,
-            'service' => $request->service,
-            'weight' => $request->weight,
-            'total_price' => $request->total_price,
-            'masukan' => $request->masukan,
-            'alamat' => $request->alamat,
-            'status' => 'Pending'
-        ]);
-    
-        return redirect()->route('orders.show', $order->id)->with('success', 'Pesanan berhasil dibuat!');
+        try {
+            // Validasi input
+            $request->validate([
+                'service' => 'required|string',
+                'alamat' => 'required|string',
+                'masukan' => 'nullable|string',
+                'pay' => 'required|in:cod,midtrans',
+                'selected_items' => 'required'
+            ]);
+
+            // Ambil items dari cart
+            $itemIds = json_decode($request->selected_items, true);
+            $cartItems = Cart::with('product')->whereIn('id', $itemIds)->get();
+
+            // Hitung total
+            $subtotal = $cartItems->sum(function ($item) {
+                return $item->product->price * $item->quantity;
+            });
+
+            // Buat order
+            $order = Order::create([
+                'user_id' => auth()->id(),
+                'total_price' => $subtotal,
+                'shipping_cost' => $request->shipping_cost,
+                'payment_method' => $request->pay,
+                'service' => $request->service,
+                'status' => 'pending',
+                'masukan' => $request->masukan,
+                'alamat' => $request->alamat
+            ]);
+
+            // Pindahkan items dari cart ke order_items
+            foreach ($cartItems as $item) {
+                $order->orderItems()->create([
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->product->price
+                ]);
+
+                // Hapus item dari cart
+                $item->delete();
+            }
+
+            // Redirect sesuai metode pembayaran
+            if ($request->pay === 'midtrans') {
+                // Redirect ke halaman pembayaran Midtrans
+                return redirect()->route('payment.midtrans', $order->id);
+            } else {
+                // COD - redirect ke halaman sukses
+                return redirect()
+                    ->route('orders.success', $order->id)
+                    ->with('success', 'Pesanan berhasil dibuat!');
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Order creation error: ' . $e->getMessage());
+            return back()
+                ->with('error', 'Gagal membuat pesanan: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     /**

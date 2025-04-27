@@ -18,7 +18,7 @@ return new class extends Migration
             $table->bigInteger('code')->unique(); // kode produk
             $table->decimal('price', 10, 2); // harga
             $table->integer('stock'); // stok
-            $table->string('photo'); // foto (path file gambar)
+            $table->string('photo')->nullable(); // foto (path file gambar)
             $table->enum('status', ['aktif', 'nonaktif'])->default('aktif'); // status
             $table->integer('diskon')->default(0); // Diskon dalam persen
             $table->decimal('harga_diskon', 10, 2)->nullable(); // Harga setelah diskon

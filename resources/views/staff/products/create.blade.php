@@ -15,7 +15,7 @@
 <body class="sb-nav-fixed">
     <x-navbar-pemasok></x-navbar-pemasok>
     <x-sidebar-pemasok></x-sidebar-pemasok>
-    
+
     <div id="layoutSidenav_content">
         <main>
             <div class="container mt-4">
@@ -24,7 +24,24 @@
                         <h4>Tambah Produk</h4>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('staff.products.store') }}" method="POST" enctype="multipart/form-data">
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        @if(session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        <form id="productForm" action="{{ route('staff.products.store') }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
                             <div class="mb-3">
                                 <label for="name" class="form-label">Nama Produk</label>
@@ -32,7 +49,8 @@
                             </div>
                             <div class="mb-3">
                                 <label for="description" class="form-label">Deskripsi</label>
-                                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                    required></textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="code" class="form-label">Kode Produk</label>
@@ -52,7 +70,8 @@
                             </div>
                             <div class="mb-3">
                                 <label for="photo" class="form-label">Foto Produk</label>
-                                <input type="file" class="form-control" id="photo" name="photo">
+                                <input type="file" class="form-control" id="photo" name="photo"
+                                    accept="image/jpeg,image/jpg,image/png">
                             </div>
                             <div class="mb-3">
                                 <label for="status" class="form-label">Status</label>
@@ -72,4 +91,29 @@
 </body>
 <script src="{{ asset('asset-landing-admin/js/scripts.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('productForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        try {
+            const formData = new FormData(this);
+            const response = await fetch('{{ route("staff.products.store") }}', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert(result.message);
+                window.location.href = '{{ route("staff.products.index") }}';
+            } else {
+                throw new Error(result.message || 'Terjadi kesalahan');
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+</script>
+
 </html>
