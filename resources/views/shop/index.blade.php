@@ -12,6 +12,24 @@
     <x-layout>
         <section class="best-selling">
             <h2 class="title">— Page Shoop —</h2>
+
+            @if(isset($searchQuery))
+                <div class="mb-4">
+                    <h2 class="text-xl font-semibold">
+                        Hasil pencarian untuk: "{{ $searchQuery }}"
+                    </h2>
+                    @if($products->isEmpty())
+                        <p class="mt-2 text-gray-600">
+                            Tidak ditemukan produk untuk pencarian ini.
+                        </p>
+                    @else
+                        <p class="mt-2 text-gray-600">
+                            Ditemukan {{ $products->count() }} produk
+                        </p>
+                    @endif
+                </div>
+            @endif
+
             <div class="products-container">
                 @forelse($products as $product)
                     <div class="product-card">

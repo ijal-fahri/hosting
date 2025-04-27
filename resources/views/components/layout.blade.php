@@ -147,19 +147,15 @@
           <button class="w-full p-2 rounded-md bg-gray-200 text-left search-trigger">
             <i class="fas fa-search mr-2"></i> Cari Produk
           </button>
-          <!-- Cart icon Mobile -->
-          <a href="{{ route('cart.index') }}" class="w-full p-2 rounded-md bg-gray-200 text-left">
-            <i class="fas fa-shopping-cart mr-2"></i> Keranjang
-          </a>
         @else
           <button onclick="showOopsDrawer()" class="w-full p-2 rounded-md bg-gray-200 text-left">
             <i class="fas fa-search mr-2"></i> Cari Produk
           </button>
-          <!-- Cart icon Mobile untuk guest -->
-          <a href="javascript:void(0)" onclick="showOopsDrawer()" class="w-full p-2 rounded-md bg-gray-200 text-left">
-            <i class="fas fa-shopping-cart mr-2"></i> Keranjang
-          </a>
         @endauth
+        <!-- Cart icon Mobile -->
+        <a href="{{ route('cart.index') }}" class="w-full p-2 rounded-md bg-gray-200 text-left">
+          <i class="fas fa-shopping-cart mr-2"></i> Keranjang
+        </a>
       </div>
     </div>
   </aside>
@@ -347,16 +343,14 @@
     searchModal.addEventListener('click', e=>{
       if(e.target===searchModal) searchModal.classList.add('hidden');
     });
-    searchInput.addEventListener('keydown', e=>{
-      if(e.key==='Enter'){
-        e.preventDefault();
-        const q = searchInput.value.trim().toLowerCase();
-        if(q==='sepatu'){
-          window.location.href = "search-results.html?query=sepatu";
-        } else {
-          alert("maaf, hanya kata kunci 'sepatu' yang dapat digunakan.");
+    searchInput.addEventListener('keydown', e => {
+        if(e.key === 'Enter') {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            if(query) {
+                window.location.href = `{{ route('shop.index') }}?search=${encodeURIComponent(query)}`;
+            }
         }
-      }
     });
   </script>
 </body>
