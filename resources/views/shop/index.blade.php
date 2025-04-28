@@ -9,16 +9,16 @@
 </head>
 
 <body>
-    <x-layout>
+    <x-navbar-shop>
         <section class="best-selling">
             <h2 class="title">— Page Shoop —</h2>
 
-            @if(isset($searchQuery))
+            @if (isset($searchQuery))
                 <div class="mb-4">
                     <h2 class="text-xl font-semibold">
                         Hasil pencarian untuk: "{{ $searchQuery }}"
                     </h2>
-                    @if($products->isEmpty())
+                    @if ($products->isEmpty())
                         <p class="mt-2 text-gray-600">
                             Tidak ditemukan produk untuk pencarian ini.
                         </p>
@@ -34,11 +34,16 @@
                 @forelse($products as $product)
                     <div class="product-card">
                         <div class="top-icons">
-                            <i class="fas fa-shopping-cart"></i>
-                            <i class="far fa-heart"></i>
+                            <form action="{{ route('cart.add') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ $product->id }}">
+                                <button type="submit" class="text-2xl text-gray-700 hover:text-black transition">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            </form>
                         </div>
 
-                        <span class="badge">{{ $product->status == 'aktif' ? 'Best Seller' : 'Tidak Aktif' }}</span>
+                        <span class="badge">{{ $product->status == 'aktif' ? 'Best' : 'Tidak Aktif' }}</span>
 
                         @if ($product->photo)
                             <img src="{{ asset('storage/' . $product->photo) }}" alt="{{ $product->name }}"
@@ -237,7 +242,7 @@
                 }
             }
         </style>
-    </x-layout>
+    </x-navbar-shop>
 </body>
 
 </html>

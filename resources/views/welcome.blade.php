@@ -410,9 +410,8 @@
   <!-- HERO SECTION -->
   <section class="hero">
     <div class="hero-text">
-      <h1>WELCOME TO ZOES STORE!</h1>
+      <h1>SELAMAT DATANG DI ZOES STORE!</h1>
       <p>Koleksi Sepatu Stylish Untuk Si Kecil, Anak Perempuan & Laki-Laki!</p>
-      <a href="#" class="btn no-underline">Shop Now</a>
     </div>
     <div class="hero-image">
       <img src="{{ asset('/assets/shozo.png') }}" alt="Sepatu">

@@ -57,17 +57,14 @@
       </nav>
       <div class="hidden md:flex items-center space-x-4">
         @auth
-          <button id="desktopSearchBtn" class="p-2 rounded-full text-xl hover:text-gray-700 hover:bg-gray-200 focus:outline-none search-trigger">
-            <i class="fas fa-search"></i>
-          </button>
           <!-- Cart icon -->
           <a href="{{ route('cart.index') }}" class="p-2 rounded-full text-xl hover:text-gray-700 hover:bg-gray-200 focus:outline-none">
             <i class="fas fa-shopping-cart"></i>
           </a>
         @else
-          <button onclick="showOopsDrawer()" class="p-2 rounded-full text-xl hover:text-gray-700 hover:bg-gray-200 focus:outline-none">
+          {{-- <button onclick="showOopsDrawer()" class="p-2 rounded-full text-xl hover:text-gray-700 hover:bg-gray-200 focus:outline-none">
             <i class="fas fa-search"></i>
-          </button>
+          </button> --}}
           <!-- Cart icon untuk guest -->
           <a href="javascript:void(0)" onclick="showOopsDrawer()" class="p-2 rounded-full text-xl hover:text-gray-700 hover:bg-gray-200 focus:outline-none">
             <i class="fas fa-shopping-cart"></i>
@@ -144,13 +141,13 @@
       </div>
       <div class="mt-6 flex flex-col gap-2">
         @auth
-          <button class="w-full p-2 rounded-md bg-gray-200 text-left search-trigger">
+          {{-- <button class="w-full p-2 rounded-md bg-gray-200 text-left search-trigger">
             <i class="fas fa-search mr-2"></i> Cari Produk
-          </button>
+          </button> --}}
         @else
-          <button onclick="showOopsDrawer()" class="w-full p-2 rounded-md bg-gray-200 text-left">
+          {{-- <button onclick="showOopsDrawer()" class="w-full p-2 rounded-md bg-gray-200 text-left">
             <i class="fas fa-search mr-2"></i> Cari Produk
-          </button>
+          </button> --}}
         @endauth
         <!-- Cart icon Mobile -->
         <a href="{{ route('cart.index') }}" class="w-full p-2 rounded-md bg-gray-200 text-left">
@@ -211,16 +208,6 @@
             Kirim Pesan
           </button>
         </form>
-      </div>
-      <!-- kanan -->
-      <div class="flex-1 min-w-[250px]">
-        <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-        <ul class="space-y-2">
-          <li><a href="/" class="hover:underline">Home</a></li>
-          <li><a href="/shop" class="hover:underline">Shop</a></li>
-          <li><a href="/faqs" class="hover:underline">Faqs</a></li>
-          <li><a href="/privacy" class="hover:underline">Privacy</a></li>
-        </ul>
       </div>
     </div>
   </footer>
