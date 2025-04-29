@@ -21,7 +21,7 @@ use App\Http\Controllers\UserOrderController;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 // Dashboard umum
 Route::get('/dashboard', function () {

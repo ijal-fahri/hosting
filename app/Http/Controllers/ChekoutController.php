@@ -166,12 +166,15 @@ class ChekoutController extends Controller
                 $item->product->decrement('stock', $item->quantity);
                 $item->delete();
             }
-    
-            // Flash success message to session
-            session()->flash('success', 'Pesanan berhasil dibuat!');
-    
-            return redirect()->route('user.orders.index');
+
+            // return response()->json([
+            //     'status' => 'success',
+            //     'message' => 'Pesanan berhasil dibuat!',
+            //     'redirect' => route('shop.index')
+            // ]);
             
+            return view('welcome');
+
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
