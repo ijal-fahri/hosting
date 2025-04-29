@@ -173,7 +173,7 @@ class ChekoutController extends Controller
             //     'redirect' => route('shop.index')
             // ]);
             
-            return view('welcome');
+            return redirect('/my-orders');
 
         } catch (\Exception $e) {
             return response()->json([
