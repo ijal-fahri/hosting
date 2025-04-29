@@ -25,6 +25,7 @@
     <main class="container mx-auto p-6 mt-6 space-y-10">
         <!-- Produk Detail -->
         <div class="bg-white rounded-lg shadow-xl p-6 md:flex">
+            <a href="/shop" style="font-weight: bold;">Back</a>
             <!-- Gambar Produk -->
             <div class="md:w-1/2 flex justify-center items-center relative">
                 <img src="{{ asset('storage/' . $product->photo) }}" alt="{{ $product->name }}"
@@ -88,6 +89,7 @@
                             Tambah Keranjang
                         </button>
                     </form>
+
                 </div>
             </div>
         </div>

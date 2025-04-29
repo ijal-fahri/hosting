@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Dashboard - SB Admin</title>
+    <title>Staff Zoes Store</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.0/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="{{ asset('asset-landing-admin/css/styles.css') }}" rel="stylesheet" />
@@ -31,8 +31,7 @@
                         <div class="card bg-black text-white mb-4">
                             <div class="card-body">Jumlah Produk</div>
                             <div class="card-footer d-flex align-items-center justify-content-between">
-                                <a class="small text-white stretched-link" href="#">View Details</a>
-                                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                            <a>{{ $jumlahProduk }} Produk</a>
                             </div>
                         </div>
                     </div>

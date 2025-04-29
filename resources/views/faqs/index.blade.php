@@ -116,20 +116,20 @@
 
     <!-- section ajukan pertanyaan -->
     <section class="text-center bg-gray-100 p-12" data-aos="fade-up">
-      <h3 class="text-2xl font-bold mb-4">ajukan pertanyaan</h3>
-      <p class="mb-6">masukkan email lo dan pertanyaan yang ingin diajukan.</p>
+      <h3 class="text-2xl font-bold mb-4">Ajukan pertanyaan</h3>
+      <p class="mb-6">Masukkan Email Anda Dan Pertanyaan Yang Ingin Diajukan.</p>
       <div class="max-w-md mx-auto flex flex-col gap-4">
         <input
           type="email"
-          placeholder="email lo"
+          placeholder="Email Anda"
           class="flex-1 px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-black"
         />
         <textarea
-          placeholder="tulis pertanyaan lo..."
+          placeholder="Tulis Pertanyaan Anda..."
           class="flex-1 px-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-black"
         ></textarea>
         <button class="bg-black text-white px-6 py-3 rounded-lg shadow-md hover:bg-gray-800">
-          kirim pertanyaan
+          Kirim Pertanyaan
         </button>
       </div>
     </section>

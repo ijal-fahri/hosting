@@ -16,7 +16,7 @@ class CartController extends Controller
         $totalItems = $cartItems->sum('quantity');
 
         foreach ($cartItems as $item) {
-            $totalPrice += $item->product->price * $item->quantity;
+            $totalPrice += $item->product->harga_diskon * $item->quantity;
         }
         return view('cart.index', compact('cartItems', 'totalPrice', 'totalItems')); 
     }
@@ -43,7 +43,7 @@ class CartController extends Controller
             Cart::create([
                 'user_id' => Auth::id(),
                 'product_id' => $product->id,
-                'price' => $product->price,
+                'price' => $product->harga_diskon,
                 'quantity' => 1, // default quantity
                 'picture' => $product->picture, // assuming you store product picture in cart
             ]);
@@ -56,7 +56,7 @@ class CartController extends Controller
         $cartItem->quantity = $request->quantity;
         $cartItem->save();
 
-        $subtotal = $cartItem->quantity * $cartItem->product->price;
+        $subtotal = $cartItem->quantity * $cartItem->product->harga_diskon;
 
         return response()->json([
             'success' => true,

@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Dashboard - Tambah User</title>
+    <title>Admin Zoes Store | Costumer</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="{{ asset('asset-landing-admin/css/styles.css') }}" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -21,8 +21,8 @@
             <div class="container-fluid px-4 py-4">
                 <h1 class="mt-4">Tambah User</h1>
                 <ol class="breadcrumb mb-4">
-                    <li class="breadcrumb-item"><a href="{{ route('users.index') }}">User Management</a></li>
-                    <li class="breadcrumb-item active">Tambah User</li>
+                    <li class="breadcrumb-item"><a href="{{ route('users.index') }}">Data User</a></li>
+                    <li class="breadcrumb-item active">Tambah Staff</li>
                 </ol>
 
                 @if ($errors->any())

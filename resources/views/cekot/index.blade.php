@@ -5,9 +5,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Konfirmasi Pesanan - Pixel Notes Shop</title>
+    <title>Chekout</title>
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -51,25 +52,6 @@
     <main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Main Content -->
         <section class="lg:col-span-2 space-y-10">
-            <!-- Progress Steps -->
-            <nav class="flex items-center justify-center space-x-6 text-sm">
-                <div class="flex items-center space-x-2 text-gray-400">
-                    <div
-                        class="w-6 h-6 flex items-center justify-center rounded-full bg-brand-light text-brand font-medium">
-                        1</div>
-                    <span>Keranjang</span>
-                </div>
-                <span class="text-gray-300">→</span>
-                <div class="flex items-center space-x-2 text-white">
-                    <div class="w-6 h-6 flex items-center justify-center rounded-full bg-brand shadow-md">2</div>
-                    <span class="font-medium text-gray-800">Konfirmasi</span>
-                </div>
-                <span class="text-gray-300">→</span>
-                <div class="flex items-center space-x-2 text-gray-300">
-                    <div class="w-6 h-6 flex items-center justify-center rounded-full border border-gray-200">3</div>
-                    <span>Selesai</span>
-                </div>
-            </nav>
 
             <!-- Product List -->
             <div class="bg-white rounded-2xl shadow-lg p-6 space-y-6">
@@ -87,7 +69,7 @@
                             </div>
                             <div class="text-right mt-4 sm:mt-0">
                                 <p class="text-xl font-bold text-gray-900">Rp
-                                    {{ number_format($item->product->price * $item->quantity, 2) }}
+                                    {{ number_format($item->product->harga_diskon * $item->quantity, 2) }}
                                 </p>
                             </div>
                         </article>
@@ -110,10 +92,10 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Kota Asal</label>
-                                <select name="origin" id="origin" class="mt-1 block w-full rounded-md border-gray-300"
-                                    required>
+                                <select name="origin" id="origin"
+                                    class="mt-1 block w-full rounded-md border-gray-300" required>
                                     <option value="">Pilih Kota Asal</option>
-                                    @foreach($cities as $city)
+                                    @foreach ($cities as $city)
                                         <option value="{{ $city['city_id'] }}">{{ $city['city_name'] }}</option>
                                     @endforeach
                                 </select>
@@ -124,7 +106,7 @@
                                 <select name="destination" id="destination"
                                     class="mt-1 block w-full rounded-md border-gray-300" required>
                                     <option value="">Pilih Kota Tujuan</option>
-                                    @foreach($cities as $city)
+                                    @foreach ($cities as $city)
                                         <option value="{{ $city['city_id'] }}">{{ $city['city_name'] }}</option>
                                     @endforeach
                                 </select>
@@ -132,8 +114,8 @@
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Kurir</label>
-                                <select name="courier" id="courier" class="mt-1 block w-full rounded-md border-gray-300"
-                                    required>
+                                <select name="courier" id="courier"
+                                    class="mt-1 block w-full rounded-md border-gray-300" required>
                                     <option value="">Pilih Kurir</option>
                                     <option value="jne">JNE</option>
                                     <option value="pos">POS</option>
@@ -145,7 +127,7 @@
                         </div>
 
                         <button type="button" onclick="checkShippingCost()"
-                            class="w-full bg-brand text-white py-2 rounded-lg">
+                            class="w-full bg-black text-white py-2 rounded-lg">
                             Cek Ongkir
                         </button>
                     </form>
@@ -169,7 +151,8 @@
                                     onchange="updateTotal()" required>
                                     <option value="" data-cost="0">-- Pilih Layanan --</option>
                                     @foreach ($costs[0]['costs'] as $item)
-                                        <option value="{{ $item['service'] }}" data-cost="{{ $item['cost'][0]['value'] }}">
+                                        <option value="{{ $item['service'] }}"
+                                            data-cost="{{ $item['cost'][0]['value'] }}">
                                             {{ $item['service'] }} - Rp
                                             {{ number_format($item['cost'][0]['value'], 0, ',', '.') }}
                                             (ETD: {{ $item['cost'][0]['etd'] }} hari)
@@ -192,9 +175,8 @@
                             </div>
 
                             <!-- Submit Button -->
-                            <button type="submit"
-                                class="bg-brand text-white px-4 py-2 rounded-xl hover:shadow-lg transition">
-                                Simpan Pesanan
+                            <button type="submit" class="w-full bg-black text-white py-3 rounded-2xl font-semibold">
+                                Pesan Sekarang
                             </button>
                         </form>
                     @endif
@@ -211,7 +193,7 @@
                     document.getElementById('courierInput').value = document.getElementById('courier').value;
 
                     try {
-                        const response = await fetch('{{ route("checkCost") }}', {
+                        const response = await fetch('{{ route('checkCost') }}', {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -230,11 +212,11 @@
                                     <select id="service" name="service" class="mt-1 block w-full rounded-md border-gray-300" onchange="updateTotal()">
                                         <option value="">Pilih Layanan</option>
                                         ${result.data.map(service => `
-                                            <option value="${service.service}" data-cost="${service.cost[0].value}">
-                                                ${service.service} - Rp ${new Intl.NumberFormat('id-ID').format(service.cost[0].value)}
-                                                (${service.cost[0].etd} hari)
-                                            </option>
-                                        `).join('')}
+                                                                                            <option value="${service.service}" data-cost="${service.cost[0].value}">
+                                                                                                ${service.service} - Rp ${new Intl.NumberFormat('id-ID').format(service.cost[0].value)}
+                                                                                                (${service.cost[0].etd} hari)
+                                                                                            </option>
+                                                                                        `).join('')}
                                     </select>
                                 </div>
                             `;
@@ -274,7 +256,7 @@
                     }).format(number);
                 }
 
-                document.getElementById('orderForm').addEventListener('submit', async function (e) {
+                document.getElementById('orderForm').addEventListener('submit', async function(e) {
                     e.preventDefault();
 
                     // Check if shipping service is selected
@@ -354,7 +336,7 @@
             </div>
 
             <!-- Payment Method and Pay Button -->
-            <form id="orderForm" action="{{ route('cekot.store') }}" method="POST">
+            <form id="orderForm" action="{{ route('cekot.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="selected_items" value="{{ json_encode($items->pluck('id')) }}">
                 <input type="hidden" name="shipping_cost" id="shippingCostInput">
@@ -387,22 +369,28 @@
                     <div id="qrCodeContainer" class="hidden mt-4">
                         <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
                             <p class="text-sm text-gray-600 mb-2">Scan QR Code untuk pembayaran:</p>
-                            <img src="{{ asset('storage/qr-code.png') }}" alt="QR Code" class="mx-auto w-48 h-48">
+                            <img src="{{ asset('asset-landing-admin/qris/qris.jpg') }}" alt="QR Code"
+                                class="mx-auto w-48 h-48">
                             <p class="text-xs text-gray-500 mt-2 text-center">Silakan scan QR Code ini untuk melakukan
-                                pembayaran COD</p>
+                                pembayaran QRIS</p>
+                            <div class="mb-3">
+                                <label for="payment_photo" class="form-label">Upload Bukti Pembayaran</label>
+                                <input type="file" class="form-control" name="payment_photo" id="payment_photo"
+                                    {{ old('payment_method') == 'cod' ? 'required' : '' }}>
+                            </div>
+
                         </div>
                     </div>
                 </div>
-
-                <button type="submit" class="w-full bg-brand text-white py-3 rounded-2xl font-semibold">
-                    Pesan Sekarang
+                <button type="submit" class="w-full bg-black  text-white py-3 rounded-2xl font-semibold transition">
+                    Bayar Sekarang
                 </button>
             </form>
         </aside>
     </main>
 
     <script>
-        document.getElementById('provinsi').addEventListener('change', function () {
+        document.getElementById('provinsi').addEventListener('change', function() {
             let provinceId = this.value;
             fetch(`/get-cities/${provinceId}`)
                 .then(res => res.json())
@@ -413,6 +401,54 @@
                         kotaSelect.innerHTML += `<option value="${k.city_id}">${k.city_name}</option>`;
                     });
                 });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('checkoutForm'); // ganti id ini sesuai form kamu
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                let formData = new FormData(this);
+
+                fetch(this.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: data.message,
+                                confirmButtonText: 'Oke'
+                            }).then(() => {
+                                window.location.href = data
+                                    .redirect; // Redirect ke halaman order.index
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: data.message,
+                                confirmButtonText: 'Coba Lagi'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan saat mengirim data.',
+                            confirmButtonText: 'Coba Lagi'
+                        });
+                    });
+            });
         });
     </script>
 

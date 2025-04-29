@@ -19,7 +19,7 @@
   </section>
 
 
-<!-- EXPLORE SECTION (Are you ready) -->
+{{-- <!-- EXPLORE SECTION (Are you ready) -->
 <section class="explore-section">
   <div class="explore-container">
     <!-- Bagian gambar di sisi kiri -->
@@ -42,9 +42,9 @@
       </div>
     </div>
   </div>
-</section>
+</section> --}}
 
-  <!-- BEST SELLING SECTION -->
+  {{-- <!-- BEST SELLING SECTION -->
   <section class="best-selling">
     <h2 class="title">— Best Selling —</h2>
     <div class="products-container" id="bestsellingProducts">
@@ -79,7 +79,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> --}}
 
   <!-- CUSTOMER REVIEW SECTION -->
   <section class="customer-review">

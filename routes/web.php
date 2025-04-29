@@ -87,5 +87,7 @@ Route::post('/cart/checkout', [ChekoutController::class, 'checkout'])->name('che
 Route::post(uri: '/checkCost', action: [ChekoutController::class, 'checkShippingCost'])->name('checkCost');
 
 Route::get('/my-orders', [UserOrderController::class, 'index'])->name('user.orders.index');
+Route::delete('/my-orders/{order}', [UserOrderController::class, 'destroy'])->name('user.orders.destroy');
+
 
 require __DIR__ . '/auth.php';

@@ -108,14 +108,14 @@
                     <!-- Contoh Item Produk -->
                     @foreach ($cartItems as $item)
                         <div class="flex flex-col md:flex-row items-center gap-4 border border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition-all duration-300 hover:ring-2 hover:ring-primary"
-                            data-price="{{ $item->product->price }}" data-quantity="{{ $item->quantity }}"
+                            data-price="{{ $item->product->harga_diskon }}" data-quantity="{{ $item->quantity }}"
                             data-id="{{ $item->id }}" data-stock="{{ $item->product->stock }}">
                             <input type="checkbox" class="select-product w-5 h-5 mt-1">
                             <img src="{{ asset('storage/' . $item->product->photo) }}" alt="Sepatu Sneakers"
                                 class="w-20 h-20 object-cover rounded-lg shadow-md">
                             <div class="flex flex-col flex-1">
                                 <p class="font-bold text-lg">{{ $item->product->name }}</p>
-                                <p class="text-gray-600">Rp {{ number_format($item->product->price) }}</p>
+                                <p class="text-gray-600">Rp {{ number_format($item->product->harga_diskon) }}</p>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <button
@@ -129,7 +129,7 @@
                                 </button>
                             </div>
                             <p class="total-price font-bold text-lg">Rp
-                                {{ number_format($item->product->price * $item->quantity, 2) }}
+                                {{ number_format($item->product->harga_diskon * $item->quantity, 2) }}
                             </p>
                             <!-- Tombol Hapus Item -->
                             <form action="{{ route('item.delete', $item->id) }}" method="POST"

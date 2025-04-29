@@ -177,7 +177,7 @@
         </div>
       </div>
       <!-- tengah -->
-      <div class="flex-1 min-w-[300px]">
+      {{-- <div class="flex-1 min-w-[300px]">
         <h3 class="text-lg font-semibold mb-4">Contact</h3>
         <form action="#" method="POST" class="flex flex-col gap-3">
           <!-- @csrf kalau pake laravel -->
@@ -208,7 +208,7 @@
             Kirim Pesan
           </button>
         </form>
-      </div>
+      </div> --}}
     </div>
   </footer>
   @endauth

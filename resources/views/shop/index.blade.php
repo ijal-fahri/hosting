@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <title>Zoes Store | Shop</title>
     <!-- Pastikan Font Awesome sudah di-load -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
         integrity="sha512-jQ3xE3yWXl87E1+u7hA7K1T9oiBLrxKQiS66dKvX5y6LStf6UR4ft056xFxo955Q7LMV+pJcWznYQlLFNV2eXA=="
@@ -11,7 +12,7 @@
 <body>
     <x-navbar-shop>
         <section class="best-selling">
-            <h2 class="title">— Page Shoop —</h2>
+            <h2 class="title">— Page Shop —</h2>
 
             @if (isset($searchQuery))
                 <div class="mb-4">

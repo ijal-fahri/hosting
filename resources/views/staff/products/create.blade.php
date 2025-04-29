@@ -10,6 +10,8 @@
     <title>Tambah Produk - SB Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="{{ asset('asset-landing-admin/css/styles.css') }}" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body class="sb-nav-fixed">
@@ -114,6 +116,41 @@
             alert(error.message);
         }
     });
+
+    document.getElementById('productForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    try {
+        const formData = new FormData(this);
+        const response = await fetch('{{ route("staff.products.store") }}', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: result.message || 'Produk berhasil ditambahkan!',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = '{{ route("staff.products.index") }}';
+            });
+        } else {
+            throw new Error(result.message || 'Terjadi kesalahan');
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.message
+        });
+    }
+});
+
 </script>
 
 </html>

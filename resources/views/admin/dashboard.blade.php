@@ -16,32 +16,32 @@
                 <div class="row">
                     <div class="col-xl-3 col-md-6">
                         <div class="card bg-gray-800 text-black mb-4">
-                            <div class="card-body">Laporan</div>
+                            <div class="card-body">Jumlah Produk</div>
                             <div class="card-footer d-flex align-items-center justify-content-between">
-                                <a class="small text-black stretched-link" href="#">View Details</a>
+                                <a>{{ $jumlahProduk }} Produk</a>
                                 <div class="small text-black"><i class="fas fa-angle-right"></i></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6">
                         <div class="card bg-black text-white mb-4">
-                            <div class="card-body">Jumlah Stock</div>
+                            <div class="card-body">Jumlah Pesanan</div>
                             <div class="card-footer d-flex align-items-center justify-content-between">
-                                <a class="small text-white stretched-link" href="#">View Details</a>
+                                <a>{{ $jumlahPesanan }} Pesanan</a>
                                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6">
                         <div class="card  bg-gray-800 text-black mb-4">
-                            <div class="card-body">Jumlah Pesanan </div>
+                            <div class="card-body">Jumlah Pengguna </div>
                             <div class="card-footer d-flex align-items-center justify-content-between">
-                                <a class="small text-black stretched-link" href="#">View Details</a>
+                                <a>{{ $jumlahUserdanStaff }} Pengguna</a>
                                 <div class="small text-black"><i class="fas fa-angle-right"></i></div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-3 col-md-6">
+                    {{-- <div class="col-xl-3 col-md-6">
                         <div class="card bg-black text-white mb-4">
                             <div class="card-body">Jumlah Costumer</div>
                             <div class="card-footer d-flex align-items-center justify-content-between">
@@ -49,7 +49,7 @@
                                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </main>

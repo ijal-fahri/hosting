@@ -6,6 +6,7 @@ use Log;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +32,7 @@ class ChekoutController extends Controller
 
             // Calculate subtotal from cart items
             $subtotal = $items->sum(function ($item) {
-                return $item->product->price * $item->quantity;
+                return $item->product->harga_diskon * $item->quantity;
             });
 
             // Get cities from RajaOngkir
@@ -113,6 +114,7 @@ class ChekoutController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    
     public function store(Request $request)
     {
         try {
@@ -124,15 +126,21 @@ class ChekoutController extends Controller
                 'alamat' => 'required|string',
                 'masukan' => 'nullable|string',
                 'shipping_cost' => 'required|numeric',
-                'payment_method' => 'required|in:cod,midtrans'
+                'payment_method' => 'required|in:cod,midtrans',
+                'payment_photo'=> $request->payment_method === 'cod' ? 'required' : 'nullable',
             ]);
-
-
+    
             $cartItems = Cart::whereIn('id', json_decode($request->selected_items))->get();
             $weight = $cartItems->sum(function ($item) {
                 return $item->quantity * ($item->product->weight ?? 1000);
             });
 
+            $paymentPhotoPath = 'default.png';
+
+            if ($request->hasFile('payment_photo')) {
+                $paymentPhotoPath = $request->file('payment_photo')->store('payment_photos', 'public');
+            }
+    
             // Create order
             $order = Order::create([
                 'user_id' => auth()->id(),
@@ -144,37 +152,34 @@ class ChekoutController extends Controller
                 'total_price' => $request->shipping_cost + ($subtotal ?? 0),
                 'masukan' => $request->masukan,
                 'alamat' => $request->alamat,
-                'payment_photo' => null,
+                'payment_photo' => $paymentPhotoPath,
                 'status' => 'Pending'
             ]);
-
-
+    
             foreach ($cartItems as $item) {
                 $order->orderItems()->create([
                     'product_id' => $item->product_id,
                     'quantity' => $item->quantity,
                     'price' => $request->shipping_cost + ($subtotal ?? 0),
                 ]);
-
-
+    
                 $item->product->decrement('stock', $item->quantity);
                 $item->delete();
             }
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Pesanan berhasil dibuat!',
-                'redirect' => route('shop.index', $order->id)
-            ]);
-
+    
+            // Flash success message to session
+            session()->flash('success', 'Pesanan berhasil dibuat!');
+    
+            return redirect()->route('user.orders.index');
+            
         } catch (\Exception $e) {
-            \Log::error('Order creation error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Gagal membuat pesanan: ' . $e->getMessage()
             ], 422);
         }
     }
+    
 
     /**
      * Display the specified resource.
