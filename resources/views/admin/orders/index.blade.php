@@ -114,7 +114,7 @@ px-2 py-1 rounded-full text-xs">
 
                         <p><strong>Bukti Pembayaran:</strong></p>
                         @if ($order->payment_photo && $order->payment_photo !== 'default.png')
-                            <img src="{{ asset('storage/payment_photos/' . $order->payment_photo) }}"
+                            <img src="{{ asset('storage/' . $order->payment_photo) }}"
                                 alt="Bukti Pembayaran"
                                 style="max-width: 100%; height: auto; border: 1px solid #ccc; padding: 5px; border-radius: 8px;">
                         @else
