@@ -1,198 +1,116 @@
+<!-- resources/views/user/orders.blade.php -->
 <x-layout>
+    <style>[x-cloak] { display: none !important; }</style>
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-4">
-                        Pesanan Saya
-                    </h2>
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8" x-data="orderPage()">
+        <div class="bg-white shadow-lg sm:rounded-2xl p-8">
+          <h2 class="text-3xl font-extrabold text-gray-900 mb-8 flex items-center">
+            <svg class="w-8 h-8 text-blue-600 mr-2 animate-pulse" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Pesanan Saya
+          </h2>
 
-                    <!-- Tombol Riwayat -->
-                    <button id="showCompletedOrdersBtn"
-                        class="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mb-4"
-                        onclick="filterOrders()">
-                        Riwayat Pesanan Selesai
-                    </button>
+          <!-- Filter Tabs -->
+          <nav class="flex flex-wrap gap-3 mb-8">
+            <button @click="setFilter('All')" :class="tabClass('All')" class="px-4 py-2 rounded-full text-sm font-medium transition">Semua</button>
+            <template x-for="st in statuses" :key="st">
+              <button @click="setFilter(st)" :class="tabClass(st)" class="px-4 py-2 rounded-full text-sm font-medium transition">
+                <span x-text="st"></span>
+              </button>
+            </template>
+          </nav>
 
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th
-                                        class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Tanggal</th>
-                                    <th
-                                        class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Total</th>
-                                    <th
-                                        class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Status</th>
-                                    <th
-                                        class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Detail</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200" id="ordersTableBody">
-                                @forelse ($orders as $order)
-                                    <tr class="orderRow">
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $order->created_at->format('d M Y H:i') }}
-                                        </td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                                            Rp {{ number_format($order->total_price, 0, ',', '.') }}
-                                        </td>
-                                        <td class="px-4 py-3 whitespace-nowrap">
-                                            <span
-                                                class="badge 
-    {{ $order->status == 'Pending' ? 'bg-yellow-500 text-white' : '' }}
-    {{ $order->status == 'Processed' ? 'bg-blue-500 text-white' : '' }}
-    {{ $order->status == 'Delivery' ? 'bg-orange-400 text-white' : '' }}
-    {{ $order->status == 'Completed' ? 'bg-green-500 text-white' : '' }}
-    {{ $order->status == 'Cancelled' ? 'bg-red-500 text-white' : '' }}
-    px-2 py-1 rounded-full text-xs">
-                                                {{ ucfirst($order->status) }}
-                                            </span>
+          <!-- Orders Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @forelse ($orders as $order)
+            <div x-show="matchFilter('{{ ucfirst($order->status) }}')"
+                 class="bg-white rounded-2xl shadow-lg p-6 transform hover:scale-105 transition duration-300 relative">
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-sm text-gray-500">{{ $order->created_at->format('d M Y H:i') }}</span>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold" :class="badgeClass('{{ $order->status }}')">
+                  {{ ucfirst($order->status) }}
+                </span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-4">Total: Rp {{ number_format($order->total_price, 0, ',', '.') }}</h3>
+              <div class="flex justify-between items-center">
+                <button @click="openDetail({{ $order->id }})" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                  Detail
+                </button>
+                @if($order->status === 'Completed')
+                <button onclick="confirmDelete(event)" data-action="{{ route('user.orders.destroy', $order->id) }}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition">
+                  Hapus
+                </button>
+                @endif
+              </div>
 
-
-                                        </td>
-                                        <td
-                                            class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 flex gap-2 items-center">
-                                            <button onclick="showOrderDetail({{ $order->id }})"
-                                                class="text-indigo-600 hover:text-indigo-900">
-                                                Lihat Detail
-                                            </button>
-
-                                            @if ($order->status == 'Completed')
-                                                <form action="{{ route('user.orders.destroy', $order->id) }}"
-                                                    method="POST" onsubmit="return confirmDelete(event)">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-800 ml-2">
-                                                        Hapus
-                                                    </button>
-                                                </form>
-                                            @else
-                                                <span class="text-gray-500 text-xs">Order belum selesai</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-
-                                    <!-- Modal Detail -->
-                                    <div id="orderDetail{{ $order->id }}"
-                                        class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-                                        <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
-                                            <div class="p-6">
-                                                <h3
-                                                    class="text-lg leading-6 font-medium text-gray-900 mb-4 text-center">
-                                                    Detail Pesanan</h3>
-                                                <div class="text-left text-sm text-gray-600 space-y-2">
-                                                    <p>Alamat: {{ $order->alamat }}</p>
-                                                    <p>Kurir: {{ strtoupper($order->courier) }}
-                                                        ({{ $order->service }})
-                                                    </p>
-                                                    <div class="mt-4 border-t pt-4 space-y-4">
-                                                        @foreach ($order->orderItems as $item)
-                                                            <div class="flex items-start gap-4">
-                                                                @if ($item->product->photo)
-                                                                    <img src="{{ asset('storage/' . $item->product->photo) }}"
-                                                                        alt="{{ $item->product->name }}"
-                                                                        class="w-16 h-16 object-cover rounded">
-                                                                @else
-                                                                    <div
-                                                                        class="w-16 h-16 bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded">
-                                                                        Tidak ada foto</div>
-                                                                @endif
-                                                                <div class="flex-1">
-                                                                    <div
-                                                                        class="flex justify-between text-sm font-medium text-gray-900">
-                                                                        <span>{{ $item->product->name }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                                <div class="mt-4 border-t pt-4 space-y-2">
-                                                    @foreach ($order->orderItems as $item)
-                                                        <div class="flex justify-between text-sm">
-                                                            <span>{{ $item->product->name }}
-                                                                ({{ $item->quantity }}x)
-                                                            </span>
-                                                            <span class="font-medium">Rp
-                                                                {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</span>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                                <div class="mt-6">
-                                                    <button onclick="hideOrderDetail({{ $order->id }})"
-                                                        class="w-full py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg">
-                                                        Tutup
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <tr>
-                                        <td colspan="4"
-                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                            Belum ada pesanan
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+              <!-- Teleported Modal: Full Detail -->
+              <template x-teleport="body">
+                <div x-show="detailId === {{ $order->id }}" x-cloak class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+                  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-auto animate-fadeIn">
+                    <div class="p-6">
+                      <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Detail Pesanan</h3>
+                      <div class="text-sm text-gray-600 mb-4">
+                        <p><strong>Alamat:</strong> {{ $order->alamat }}</p>
+                        <p><strong>Kurir:</strong> {{ strtoupper($order->courier) }} ({{ $order->service }})</p>
+                      </div>
+                      <div class="border-t pt-4 space-y-4">
+                        @foreach ($order->orderItems as $item)
+                        <div class="flex items-start gap-4">
+                          @if ($item->product->photo)
+                            <img src="{{ asset('storage/' . $item->product->photo) }}" alt="{{ $item->product->name }}" class="w-16 h-16 object-cover rounded-lg">
+                          @else
+                            <div class="w-16 h-16 bg-gray-100 flex items-center justify-center text-xs text-gray-500 rounded-lg">No Photo</div>
+                          @endif
+                          <div class="flex-1">
+                            <p class="font-medium text-gray-900">{{ $item->product->name }}</p>
+                            <p class="text-sm text-gray-600">x{{ $item->quantity }}</p>
+                          </div>
+                          <div class="text-sm font-medium text-gray-900">Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</div>
+                        </div>
+                        @endforeach
+                      </div>
+                      <div class="mt-6 text-right font-bold text-gray-900">Total: Rp {{ number_format($order->total_price, 0, ',', '.') }}</div>
+                      <div class="mt-6">
+                        <button @click="closeDetail()" class="w-full py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition">
+                          Tutup
+                        </button>
+                      </div>
                     </div>
+                  </div>
                 </div>
+              </template>
             </div>
+            @empty
+            <div class="col-span-full text-center text-gray-400">Belum ada pesanan</div>
+            @endforelse
+          </div>
+
         </div>
+      </div>
     </div>
 
-    {{-- SweetAlert2 --}}
+    <!-- Alpine.js & SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script>
-        function showOrderDetail(orderId) {
-            document.getElementById('orderDetail' + orderId).classList.remove('hidden');
+      function orderPage() {
+        return {
+          statuses: ['Pending','Processed','Delivery','Completed','Cancelled'],
+          statusFilter: 'All',
+          detailId: null,
+          setFilter(st) { this.statusFilter = st; },
+          openDetail(id) { this.detailId = id; },
+          closeDetail() { this.detailId = null; },
+          tabClass(st) { return this.statusFilter === st ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'; },
+          badgeClass(status) { const map = { 'Pending': 'bg-yellow-200 text-yellow-800', 'Processed': 'bg-blue-200 text-blue-800', 'Delivery': 'bg-orange-200 text-orange-800', 'Completed': 'bg-green-200 text-green-800', 'Cancelled': 'bg-red-200 text-red-800' }; return map[status] || 'bg-gray-200 text-gray-800'; },
+          matchFilter(status) { return this.statusFilter === 'All' || status === this.statusFilter; }
         }
+      }
 
-        function hideOrderDetail(orderId) {
-            document.getElementById('orderDetail' + orderId).classList.add('hidden');
-        }
-
-        function confirmDelete(event) {
-            event.preventDefault(); // stop submit dulu
-            Swal.fire({
-                title: 'Yakin mau hapus pesanan ini?',
-                text: "Pesanan akan dihapus permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    event.target.submit(); // baru submit
-                }
-            });
-        }
-
-        function filterOrders() {
-            const showCompleted = document.getElementById('showCompletedOrdersBtn').innerText === "Riwayat Pesanan Selesai";
-            const rows = document.querySelectorAll('.orderRow');
-
-            rows.forEach(row => {
-                if (showCompleted) {
-                    row.classList.toggle('hidden', row.querySelector('td:nth-child(3) span').innerText !==
-                        "Completed");
-                } else {
-                    row.classList.toggle('hidden', row.querySelector('td:nth-child(3) span').innerText ===
-                        "Completed");
-                }
-            });
-
-            document.getElementById('showCompletedOrdersBtn').innerText = showCompleted ? "Tampilkan Semua Pesanan" :
-                "Riwayat Pesanan Selesai";
-        }
+      function confirmDelete(event) {
+        event.preventDefault();
+        Swal.fire({ title: 'Yakin mau hapus pesanan ini?', text: 'Pesanan akan dihapus permanen!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Ya, hapus!', cancelButtonText: 'Batal' }).then((result) => { if (result.isConfirmed) { fetch(event.target.getAttribute('data-action'), { method: 'DELETE', headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'} }).then(() => location.reload()); }});
+      }
     </script>
-</x-layout>
+  </x-layout>
