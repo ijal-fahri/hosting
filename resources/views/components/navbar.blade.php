@@ -31,66 +31,17 @@
     <div class="hidden lg:flex space-x-4 items-center" id="desktopMenu">
       <a href="{{ route('dashboard') }}"
          class="px-4 py-2 rounded-md text-sm font-semibold hover:bg-gray-700 transition duration-200">
-        Dashboard
+        Back
       </a>
 
-      <!-- Dropdown About Me -->
-      <div class="relative">
-        <button id="aboutBtn"
-                class="px-4 py-2 rounded-md text-sm font-semibold hover:bg-gray-700 transition duration-200 flex items-center focus:outline-none">
-          Profile
-          <i class="fas fa-caret-down ml-2"></i>
-        </button>
-        <div id="aboutDropdown"
-             class="absolute left-0 mt-2 w-44 bg-white text-black rounded-md shadow-lg hidden z-10">
-          <a href="{{ route('profile.edit') }}"
-             class="block px-4 py-2 text-sm hover:bg-gray-100 transition duration-200 rounded-t-md">
-            Data Pribadi
-          </a>
-          <a href="{{ route('profile.datapribadi') }}"
-             class="block px-4 py-2 text-sm hover:bg-gray-100 transition duration-200 rounded-b-md">
-            Informasi Data Diri
-          </a>
-        </div>
-      </div>
-
-      <!-- Dropdown Riwayat -->
-      <div class="relative">
-        <button id="riwayatBtn"
-                class="px-4 py-2 rounded-md text-sm font-semibold hover:bg-gray-700 transition duration-200 flex items-center focus:outline-none">
-          Riwayat
-          <i class="fas fa-caret-down ml-2"></i>
-        </button>
-        <div id="riwayatDropdown"
-             class="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg hidden z-10">
-          <a href="{{ route('riwayat.transaksi.trans') }}"
-             class="block px-4 py-2 text-sm hover:bg-gray-100 transition duration-200 rounded-t-md">
-            Riwayat Transaksi
-          </a>
-          <a href="{{ route('riwayat.pemesanan.pesanan') }}"
-             class="block px-4 py-2 text-sm hover:bg-gray-100 transition duration-200 rounded-b-md">
-            Riwayat Pesanan
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Mobile Menu -->
   <div class="lg:hidden mt-4 space-y-2 hidden" id="mobileMenu">
     <a href="{{ route('dashboard') }}"
        class="block px-4 py-2 rounded-md text-sm font-semibold hover:bg-gray-700 transition duration-200">
-      Dashboard
+      Back
     </a>
 
-    <!-- Profile (dropdown lookalike for mobile) -->
-    <div class="space-y-1">
-      <div class="px-4 py-2 font-semibold">Profile</div>
-      <a href="{{ route('profile.edit') }}"
-         class="block px-6 py-1 text-sm hover:bg-gray-700">Data Pribadi</a>
-      <a href="{{ route('profile.datapribadi') }}"
-         class="block px-6 py-1 text-sm hover:bg-gray-700">Informasi Data Diri</a>
-    </div>
 
     <!-- Riwayat (dropdown lookalike for mobile) -->
     <div class="space-y-1">
