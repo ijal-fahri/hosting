@@ -8,8 +8,6 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     <title>Staff Zoes Store | Product</title>
-    {{-- HAPUS INI: simple-datatables CSS --}}
-    {{-- <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" /> --}}
     <link href="{{ asset('asset-landing-admin/css/styles.css') }}" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -107,17 +105,19 @@
                                                 <button type="button"
                                                     class="btn btn-sm btn-danger delete-btn">Hapus</button>
                                             </form>
-
                                         </div>
                                     </td>
                                 </tr>
                                 @empty
-                                <tr>
-                                    <td colspan="11" class="text-center">Tidak ada data produk.</td>
-                                </tr>
+                                {{-- Jika tidak ada produk, DataTables tidak akan diinisialisasi --}}
+                                {{-- Anda bisa menyembunyikan pesan ini jika DataTables tidak diinisialisasi --}}
                                 @endforelse
                             </tbody>
                         </table>
+                        {{-- Tampilkan pesan "Tidak ada data" secara terpisah jika $products kosong --}}
+                        @if ($products->isEmpty())
+                            <p class="text-center mt-3">Tidak ada data produk.</p>
+                        @endif
                     </div>
                 </div>
 
@@ -133,27 +133,23 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
             crossorigin="anonymous">
         </script>
-        {{-- HAPUS INI: simple-datatables JS --}}
-        {{-- <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
-            crossorigin="anonymous"></script> --}}
-        {{-- HAPUS INI: Skrip inisialisasi simple-datatables --}}
-        {{-- <script src="{{ asset('js/datatables-simple-demo.js') }}"></script> --}}
-
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
         <script src="{{ asset('assets/demo/chart-area-demo.js') }}"></script>
         <script src="{{ asset('assets/demo/chart-bar-demo.js') }}"></script>
-        <script src="{{ asset('js/scripts.js') }}"></script> <script>
+        <script src="{{ asset('js/scripts.js') }}"></script>
+        <script>
             $(document).ready(function() {
-                // --- INISIALISASI DATATABLES.NET ---
-                $('#datatablesSimple').DataTable({
-                    // Opsional: Konfigurasi tambahan untuk DataTables
-                    // "paging": true,
-                    // "ordering": true,
-                    // "info": true,
-                    // "searching": true, // Aktifkan search/filter
-                    // "lengthChange": true // Aktifkan pilihan jumlah data per halaman
-                });
-                // --- AKHIR INISIALISASI DATATABLES.NET ---
+                // Hanya inisialisasi DataTables jika ada data produk
+                @if ($products->isNotEmpty())
+                    $('#datatablesSimple').DataTable({
+                        // Opsional: Konfigurasi tambahan untuk DataTables
+                        // "paging": true,
+                        // "ordering": true,
+                        // "info": true,
+                        // "searching": true,
+                        // "lengthChange": true
+                    });
+                @endif
 
                 @if (session('success'))
                     Swal.fire({
@@ -169,7 +165,6 @@
                     });
                 @endif
 
-                // Handle AJAX responses for product actions (add, update, delete)
                 $(document).on('click', '.delete-btn', function(e) {
                     e.preventDefault();
                     let form = $(this).closest('form');
@@ -187,16 +182,14 @@
                     });
                 });
 
-                // Handle click for Edit button
                 $(document).on('click', '.edit-btn', function() {
-                    let url = $(this).data('href'); // Ambil URL dari data-href
-                    window.location.href = url; // Arahkan browser ke URL tersebut
+                    let url = $(this).data('href');
+                    window.location.href = url;
                 });
 
-                // Handle click for Show button
                 $(document).on('click', '.show-btn', function() {
-                    let url = $(this).data('href'); // Ambil URL dari data-href
-                    window.location.href = url; // Arahkan browser ke URL tersebut
+                    let url = $(this).data('href');
+                    window.location.href = url;
                 });
             });
         </script>

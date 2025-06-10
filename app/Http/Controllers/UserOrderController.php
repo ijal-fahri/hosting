@@ -3,24 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use App\Models\ProductRating; // Import model ProductRating yang baru
+use App\Models\ProductRating;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\JsonResponse; // Import untuk type hint JsonResponse
-use Illuminate\Http\RedirectResponse; // Import untuk type hint RedirectResponse
-use Illuminate\View\View; // Import untuk type hint View
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth; // Tambahkan ini
 
 class UserOrderController extends Controller
 {
     /**
      * Menampilkan daftar pesanan pengguna.
      */
-    public function index(): View // Type hint return View
+    public function index(): View
     {
-        // Memuat relasi orderItems dan produknya
-        $orders = Order::with(['orderItems.product'])
-            ->where('user_id', auth()->id()) // Hanya pesanan milik pengguna yang sedang login
+        // Memuat relasi user, orderItems, dan produknya
+        $orders = Order::with(['user', 'orderItems.product'])
+            ->where('user_id', Auth::id()) // Hanya pesanan milik pengguna yang sedang login
             ->latest() // Urutkan dari yang terbaru
             ->get();
 
@@ -30,10 +31,10 @@ class UserOrderController extends Controller
     /**
      * Menampilkan form untuk memberikan rating pada produk di dalam pesanan.
      */
-    public function rateForm(Order $order) 
+    public function rateForm(Order $order): View | RedirectResponse
     {
         // Pastikan hanya pesanan milik pengguna yang sedang login
-        if ($order->user_id !== auth()->id()) {
+        if ($order->user_id !== Auth::id()) {
             abort(403, 'Anda tidak memiliki akses untuk melihat halaman ini.');
         }
 
@@ -45,7 +46,7 @@ class UserOrderController extends Controller
         // Muat item pesanan beserta produknya
         // Muat juga rating yang mungkin sudah ada untuk produk-produk ini oleh user yang sedang login
         $order->load(['orderItems.product.ratings' => function($query) use ($order) {
-            $query->where('user_id', auth()->id())->where('order_id', $order->id);
+            $query->where('user_id', Auth::id())->where('order_id', $order->id);
         }]);
 
         return view('user.orders.rate_form', compact('order'));
@@ -54,10 +55,10 @@ class UserOrderController extends Controller
     /**
      * Menyimpan rating produk dari form.
      */
-    public function submitRatings(Request $request, Order $order): JsonResponse // Type hint return JsonResponse
+    public function submitRatings(Request $request, Order $order): JsonResponse
     {
         // Pastikan hanya pesanan milik pengguna yang sedang login
-        if ($order->user_id !== auth()->id()) {
+        if ($order->user_id !== Auth::id()) {
             return response()->json(['message' => 'Anda tidak memiliki akses.'], 403);
         }
 
@@ -82,14 +83,14 @@ class UserOrderController extends Controller
                 });
 
                 if (!$orderItem) {
-                    Log::warning('Product ID ' . $itemRating['product_id'] . ' not found in order ' . $order->id . ' for user ' . auth()->id());
+                    Log::warning('Product ID ' . $itemRating['product_id'] . ' not found in order ' . $order->id . ' for user ' . Auth::id());
                     continue; // Skip jika produk tidak ada di pesanan ini (bisa jadi tempering data)
                 }
 
                 // Buat atau perbarui rating produk
                 ProductRating::updateOrCreate(
                     [
-                        'user_id' => auth()->id(),
+                        'user_id' => Auth::id(),
                         'product_id' => $itemRating['product_id'],
                         'order_id' => $order->id, // Menyimpan konteks order_id
                     ],
@@ -106,13 +107,13 @@ class UserOrderController extends Controller
             ], 200);
 
         } catch (ValidationException $e) {
-            Log::warning('Product rating validation failed: ' . $e->getMessage(), ['errors' => $e->errors(), 'order_id' => $order->id, 'user_id' => auth()->id()]);
+            Log::warning('Product rating validation failed: ' . $e->getMessage(), ['errors' => $e->errors(), 'order_id' => $order->id, 'user_id' => Auth::id()]);
             return response()->json([
                 'message' => 'Validasi gagal. Cek kembali rating Anda.',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            Log::error('Error submitting product ratings: ' . $e->getMessage(), ['exception' => $e, 'order_id' => $order->id, 'user_id' => auth()->id()]);
+            Log::error('Error submitting product ratings: ' . $e->getMessage(), ['exception' => $e, 'order_id' => $order->id, 'user_id' => Auth::id()]);
             return response()->json([
                 'message' => 'Terjadi kesalahan server saat menyimpan rating.',
             ], 500);
@@ -124,10 +125,10 @@ class UserOrderController extends Controller
      * Menghapus pesanan tertentu.
      * Dirancang untuk merespons JSON (untuk permintaan AJAX).
      */
-    public function destroy(Order $order): JsonResponse // Type hint return JsonResponse
+    public function destroy(Order $order): JsonResponse
     {
         // Pastikan hanya pesanan milik pengguna yang sedang login yang bisa dihapus
-        if ($order->user_id !== auth()->id()) {
+        if ($order->user_id !== Auth::id()) {
             return response()->json(['message' => 'Anda tidak memiliki akses untuk menghapus pesanan ini.'], 403);
         }
 
@@ -140,7 +141,7 @@ class UserOrderController extends Controller
             $order->delete();
             return response()->json(['message' => 'Pesanan berhasil dihapus.'], 200);
         } catch (\Exception $e) {
-            Log::error('Error deleting order: ' . $e->getMessage(), ['order_id' => $order->id, 'user_id' => auth()->id()]);
+            Log::error('Error deleting order: ' . $e->getMessage(), ['order_id' => $order->id, 'user_id' => Auth::id()]);
             return response()->json(['message' => 'Gagal menghapus pesanan. Terjadi kesalahan server.'], 500);
         }
     }
