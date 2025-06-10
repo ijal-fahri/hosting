@@ -18,6 +18,7 @@ use App\Http\Controllers\CekotController;
 use App\Http\Controllers\ChekoutController;
 use App\Http\Controllers\DataProdukController;
 use App\Http\Controllers\UserOrderController;
+use App\Http\Controllers\ProductRatingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,6 +28,9 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/product_ratings', [ProductRatingController::class, 'index'])->name('product_ratings.index');Route::get('/product-ratings', [ProductRatingController::class, 'index'])->name('product_ratings.index');
+
 
 // Profile
 Route::middleware('auth')->group(function () {
@@ -43,6 +47,7 @@ Route::resource('/admin/users', AdminUserController::class);
 Route::resource('/admin/orders', AdminOrderController::class);
 Route::post('/admin/orders/{id}/update-status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
 
+
 // **PEMASOK ROUTE** dengan prefix `/pemasok` dan middleware `pemasok`
 Route::middleware(['auth', 'staff'])->prefix('staff')->group(function () {
     Route::get('/dashboard', [PemasokController::class, 'index'])->name('pemasok.dashboard');
@@ -57,6 +62,17 @@ Route::get('/settings', [SettingsController::class, 'index'])->name('settings.in
 
 //Route Riwayat Pesanan
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+// Pastikan ini ada di dalam group middleware 'auth' atau yang relevan untuk user
+// Route untuk menampilkan halaman rating produk dalam sebuah pesanan
+Route::get('/user/orders/{order}/rate', [App\Http\Controllers\UserOrderController::class, 'rateForm'])->name('user.orders.rate_form');
+
+// Route untuk submit rating (akan dibuat di langkah selanjutnya)
+// routes/web.php
+Route::post('/user/orders/{order}/submit-ratings', [UserOrderController::class, 'submitRatings'])->name('user.orders.submit_ratings');
+
+// Route yang sudah ada (pastikan cocok dengan perubahan controller sebelumnya)
+Route::get('/user/orders', [App\Http\Controllers\UserOrderController::class, 'index'])->name('user.orders.index');
+Route::delete('/user/orders/{order}', [App\Http\Controllers\UserOrderController::class, 'destroy'])->name('user.orders.destroy');
 // Route::get('/cekot/confirm', [cekotController::class, 'confirm'])->name('cekot.confirm');
 // Route::post('/cekot/confirm', [cekotController::class, 'store'])->name('cekot.store');
 // Route::get('/cart/cekot',[CekotController::class, 'index'])->name('cekot.index');

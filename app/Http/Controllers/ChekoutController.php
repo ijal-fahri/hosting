@@ -5,11 +5,8 @@ namespace App\Http\Controllers;
 use Log;
 use App\Models\Cart;
 use App\Models\Order;
-use App\Models\OrderItem;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Auth;
 
 class ChekoutController extends Controller
 {
@@ -18,8 +15,6 @@ class ChekoutController extends Controller
      */
     public function index(Request $request)
     {
-
-
         return view('cekot.index', ['costs' => '']);
     }
 
@@ -103,17 +98,7 @@ class ChekoutController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     
     public function store(Request $request)
     {
@@ -167,11 +152,6 @@ class ChekoutController extends Controller
                 $item->delete();
             }
 
-            // return response()->json([
-            //     'status' => 'success',
-            //     'message' => 'Pesanan berhasil dibuat!',
-            //     'redirect' => route('shop.index')
-            // ]);
             
             return redirect('/my-orders');
 
@@ -183,36 +163,4 @@ class ChekoutController extends Controller
         }
     }
     
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }
