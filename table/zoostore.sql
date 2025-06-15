@@ -34,7 +34,7 @@ CREATE TABLE `carts` (
   KEY `carts_product_id_foreign` (`product_id`),
   CONSTRAINT `carts_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   CONSTRAINT `carts_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `failed_jobs` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -94,7 +94,7 @@ CREATE TABLE `order_items` (
   KEY `order_items_product_id_foreign` (`product_id`),
   CONSTRAINT `order_items_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
   CONSTRAINT `order_items_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `orders` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -118,7 +118,7 @@ CREATE TABLE `orders` (
   UNIQUE KEY `orders_order_id_midtrans_unique` (`order_id_midtrans`),
   KEY `orders_user_id_foreign` (`user_id`),
   CONSTRAINT `orders_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `password_reset_tokens` (
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE `product_ratings` (
   CONSTRAINT `product_ratings_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE SET NULL,
   CONSTRAINT `product_ratings_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   CONSTRAINT `product_ratings_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `products` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -160,7 +160,7 @@ CREATE TABLE `products` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `products_code_unique` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `sessions` (
   `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -187,12 +187,8 @@ CREATE TABLE `users` (
   `role` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'user',
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('staf@gmail.com|127.0.0.1', 'i:1;', 1749578193);
-INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('staf@gmail.com|127.0.0.1:timer', 'i:1749578193;', 1749578193);
 
 
 
@@ -222,21 +218,21 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (11, '2025_06_10_172741_add_shipping_cost_to_orders_table', 3);
 
 INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`, `created_at`, `updated_at`) VALUES
-(5, 12, 1, 1, '90000.00', '2025-06-10 17:52:56', '2025-06-10 17:52:56');
+(6, 14, 3, 1, '19000.00', '2025-06-15 12:40:39', '2025-06-15 12:40:39');
 
 
 INSERT INTO `orders` (`id`, `user_id`, `order_id_midtrans`, `origin`, `destination`, `courier`, `service`, `shipping_cost`, `weight`, `total_price`, `masukan`, `alamat`, `payment_photo`, `status`, `payment_method`, `created_at`, `updated_at`) VALUES
-(12, 4, NULL, 'Bogor', '78', 'jne', 'CTC', '0.00', 1000, '100000.00', 'hahaha', 'Laladon', NULL, 'Completed', 'midtrans', '2025-06-10 17:52:56', '2025-06-10 17:57:51');
+(14, 4, NULL, 'Bogor', '78', 'jne', 'CTC', '0.00', 1000, '29000.00', 'Mantap', 'Laladon', NULL, 'Completed', 'midtrans', '2025-06-15 12:40:39', '2025-06-15 13:06:28');
 
 
 
 
 INSERT INTO `product_ratings` (`id`, `user_id`, `product_id`, `order_id`, `rating`, `comment`, `created_at`, `updated_at`) VALUES
-(1, 4, 1, 12, 4, 'mantap sepatu nya', '2025-06-10 17:59:11', '2025-06-10 17:59:11');
+(2, 4, 3, 14, 5, 'mantap', '2025-06-15 13:08:16', '2025-06-15 13:08:16');
 
 
 INSERT INTO `products` (`id`, `name`, `description`, `code`, `price`, `stock`, `photo`, `status`, `diskon`, `harga_diskon`, `created_at`, `updated_at`) VALUES
-(1, 'Sepatu', 'Sepatu mantap', 1, '100000.00', 5, 'products/ElnDQXIPnBCLAalPiSv6WpK6Hk6oqWy4fgSTUchj.jpg', 'aktif', 10, '90000.00', '2025-06-10 16:10:01', '2025-06-10 17:56:34');
+(3, 'Sepatu anak laki laki', 'Sepatu Keren', 1, '20000.00', 9, 'products/PUcP32qxlxPyEpxfOPypanYSvfPSStO5bU5AAx9c.jpg', 'aktif', 5, '19000.00', '2025-06-15 12:38:36', '2025-06-15 12:40:39');
 
 
 
@@ -246,7 +242,9 @@ INSERT INTO `users` (`id`, `name`, `email`, `usertype`, `email_verified_at`, `pa
 INSERT INTO `users` (`id`, `name`, `email`, `usertype`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `role`) VALUES
 (2, 'admin', 'admin@gmail.com', 'admin', NULL, '$2y$12$9z6lxkyllz3YiHckMejfq.BPRny6GyF3C9HO6aRCG0fb70nfwRHOe', NULL, '2025-06-10 16:11:33', '2025-06-10 16:11:33', 'user');
 INSERT INTO `users` (`id`, `name`, `email`, `usertype`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `role`) VALUES
-(4, 'user', 'user@gmail.com', 'user', NULL, '$2y$12$ehwhXjHhJuM5A59KG8kqEed./b/SuGy1D1wJPFzTvEL4p7e6OGwou', NULL, '2025-06-10 16:33:41', '2025-06-10 16:33:41', 'user');
+(4, 'user', 'user@gmail.com', 'user', NULL, '$2y$12$UWe1RW9zOvf/2mMeJlQ3sOGODgrFqXdqsy/BMTmNmdYJUb6LN7CTu', NULL, '2025-06-10 16:33:41', '2025-06-15 13:11:10', 'user');
+INSERT INTO `users` (`id`, `name`, `email`, `usertype`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `role`) VALUES
+(5, 'staff1', 'stafF1@gmail.com', 'staff', NULL, '$2y$12$Z4aHOZVXm6lH35/QvMJ1b.nDEWwehcceZTlZLJAlY1jTFaehvaJ/u', NULL, '2025-06-15 13:07:11', '2025-06-15 13:07:11', 'user');
 
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

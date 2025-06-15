@@ -83,8 +83,6 @@
             @guest
               <a href="{{ route('login') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
                 <i class="fas fa-sign-in-alt"></i> Login
-              <a href="{{ route('login') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
-                <i class="fas fa-sign-in-alt"></i> Login Admin
               <a href="{{ route('register') }}" class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100">
                 <i class="fas fa-user-plus"></i> Register
               </a>

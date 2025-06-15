@@ -36,9 +36,10 @@ Route::get('/product_ratings', [ProductRatingController::class, 'index'])->name(
 // Profile
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update'); // Ini sudah benar
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
 
 // **ADMIN ROUTE** dengan prefix `/admin` dan middleware `admin`
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () { // Grouping untuk admin

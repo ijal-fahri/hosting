@@ -49,22 +49,10 @@
                         <input type="password" name="password" required class="w-full bg-transparent outline-none" placeholder="Enter your password">
                     </div>
                 </div>
-                <div class="flex flex-col md:flex-row items-center justify-between mb-6 text-lg">
-                    <label class="flex items-center">
-                        <input type="checkbox" class="form-checkbox">
-                        <span class="ml-2">Remember me</span>
-                    </label>
-                    <a href="#" class="text-blue-500 mt-2 md:mt-0">Forgot Password?</a>
-                </div>
                 <button class="w-full bg-black text-white py-3 text-lg rounded-full shadow-md hover:bg-gray-800 focus:outline-none transition-all duration-300 transform hover:scale-105">
                     Login
                 </button>
             </form>
-
-            <div class="flex justify-center mt-6 text-2xl">
-                <a href="#" class="text-blue-500 mx-4 transition duration-300 transform hover:scale-125"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="text-red-500 mx-4 transition duration-300 transform hover:scale-125"><i class="fab fa-google"></i></a>
-            </div>
         </div>
 
         <!-- Bagian Video -->

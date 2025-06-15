@@ -46,8 +46,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {{-- Kita tidak perlu @forelse di sini, cukup @foreach --}}
-                                {{-- DataTables akan menangani pesan "No data available in table" secara otomatis --}}
                                 @foreach($orders as $order)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
@@ -81,16 +79,13 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        {{-- Hapus pesan "Tidak ada data pesanan." di luar tabel juga, DataTables akan mengurusnya --}}
-                        {{-- @if ($orders->isEmpty())
-                            <p class="text-center mt-3 text-gray-500">Tidak ada data pesanan.</p>
-                        @endif --}}
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
+    {{-- MODAL DETAIL PESANAN --}}
     @foreach ($orders as $order)
         <div class="modal fade" id="orderDetailModal{{ $order->id }}" tabindex="-1"
             aria-labelledby="orderDetailModalLabel{{ $order->id }}" aria-hidden="true">
@@ -108,7 +103,10 @@
                         <p><strong>Alamat Pengiriman:</strong> {{ $order->alamat }}</p>
                         <p><strong>Catatan:</strong> {{ $order->masukan ?? '-' }}</p>
                         <p><strong>Kurir:</strong> {{ strtoupper($order->courier) }} ({{ $order->service }})</p>
-                        <p><strong>Biaya Ongkir:</strong> Rp {{ number_format($order->shipping_cost ?? 0, 0, ',', '.') }}</p>
+
+                        {{-- === BAGIAN PENTING UNTUK BIAYA ONGKIR === --}}
+                        {{-- ======================================= --}}
+
                         <p><strong>Bukti Pembayaran:</strong></p>
                         @if ($order->payment_photo && $order->payment_photo !== 'default.png' && $order->payment_photo !== null)
                             <img src="{{ asset('storage/' . $order->payment_photo) }}" alt="Bukti Pembayaran" class="img-fluid rounded mb-3" style="max-width: 200px;">
@@ -175,14 +173,6 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th colspan="4" class="text-end">Subtotal Produk:</th>
-                                        <th class="text-end">Rp{{ number_format($subtotalProduk, 0, ',', '.') }}</th>
-                                    </tr>
-                                    <tr>
-                                        <th colspan="4" class="text-end">Biaya Ongkir:</th>
-                                        <th class="text-end">Rp{{ number_format($order->shipping_cost ?? 0, 0, ',', '.') }}</th>
-                                    </tr>
-                                    <tr>
                                         <th colspan="4" class="text-end">Total Keseluruhan:</th>
                                         <th class="text-end">Rp{{ number_format($order->total_price, 0, ',', '.') }}</th>
                                     </tr>
@@ -227,7 +217,7 @@
             $('#myTable').DataTable({
                 responsive: true,
                 // "language": { // Opsional: Ubah teks DataTables ke Bahasa Indonesia
-                //     "emptyTable": "Tidak ada data pesanan tersedia di tabel"
+                //      "emptyTable": "Tidak ada data pesanan tersedia di tabel"
                 // }
                 // Tambahkan konfigurasi tambahan jika diperlukan
             });

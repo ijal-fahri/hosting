@@ -18,35 +18,6 @@
     </div>
   </section>
 
-
-  <!-- CUSTOMER REVIEW SECTION -->
-  <section class="customer-review">
-    <h2>— Customer Review —</h2>
-    <div class="review-container">
-      <div class="review-card">
-        <img src="{{ asset('/assets/vies.jpeg') }}" alt="Ava Joshi" class="review-img" />
-        <div class="review-content">
-          <h3 class="review-name">Ava Joshi</h3>
-          <p class="stars">⭐⭐⭐⭐☆</p>
-          <p class="review-text">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod 
-            tempor incididunt ut labore et dolore magna aliqua.
-          </p>
-        </div>
-      </div>
-      <div class="review-card">
-        <img src="{{ asset('/assets/vies.jpeg') }}" alt="Otis Bisnoy" class="review-img" />
-        <div class="review-content">
-          <h3 class="review-name">Otis Bisnoy</h3>
-          <p class="stars">⭐⭐⭐⭐☆</p>
-          <p class="review-text">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod 
-            tempor incididunt ut labore et dolore magna aliqua.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
 </body>
 </html>
 </x-layout>
